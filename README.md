@@ -1,10 +1,7 @@
 ## hass-psn WIP: This need to be updated for PSN
 
-[![Discord](https://badgen.net/discord/online-members/zGVYf58)](https://discord.gg/zGVYf58)
 ![GitHub Release](https://img.shields.io/github/v/release/jackjpowell/hass-psn)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/jackjpowell/hass-psn/total)
-
-## hass-psn
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://brands.home-assistant.io/psn/dark_logo.png">
