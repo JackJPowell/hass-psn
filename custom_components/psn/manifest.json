@@ -1,0 +1,14 @@
+{
+  "domain": "psn",
+  "name": "Playstation",
+  "codeowners": ["@jackjpowell"],
+  "config_flow": true,
+  "dependencies": ["network"],
+  "version": "0.0.2",
+  "documentation": "https://github.com/JackJPowell/hass-psn",
+  "homekit": {},
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "requirements": ["PSNAWP-ASYNC==0.0.2"],
+  "ssdp": []
+}
