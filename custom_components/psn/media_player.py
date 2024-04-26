@@ -1,6 +1,7 @@
-"""Binary sensor platform for Unfolded Circle."""
-from dataclasses import dataclass
+"""Media player entity for PSN."""
+
 import logging
+from dataclasses import dataclass
 
 from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
@@ -11,18 +12,18 @@ from homeassistant.components.media_player import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, PSN_COORDINATOR
-from .coordinator import PsnCoordinator
+from .entity import PSNEntity
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
 class PSNdata:
+    """PSN dataclass"""
+
     account = {"id": "", "handle": ""}
     presence = {"availability": "", "lastAvailableDate": ""}
     platform = {"status": "", "platform": ""}
@@ -34,43 +35,23 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
+    """Entity Setup"""
     coordinator = hass.data[DOMAIN][config_entry.entry_id][PSN_COORDINATOR]
     await coordinator.async_config_entry_first_refresh()
-    # api = hass.data[DOMAIN][config_entry.entry_id][PSN_API]
-
-    # npsso = config_entry.data.get("npsso")
-    # psn = await api.create(npsso)
-    # user = await psn.user(online_id="me")
-    # presence = await user.get_presence()
-    # psn = {"psn": psn, "user": user, "presence": presence}
-
     async_add_entities([MediaPlayer(coordinator)])
 
 
-class MediaPlayer(CoordinatorEntity[PsnCoordinator], MediaPlayerEntity):
+class MediaPlayer(PSNEntity, MediaPlayerEntity):
+    """Media player entity representing currently playing game"""
+
     device_class = MediaPlayerDeviceClass.RECEIVER
     _attr_supported_features = (
         MediaPlayerEntityFeature.TURN_OFF | MediaPlayerEntityFeature.TURN_ON
     )
 
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return the device info."""
-        return DeviceInfo(
-            identifiers={
-                # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, "PSN")
-            },
-            name="PSN",
-            manufacturer="Sony",
-            model="Playstation Network",
-            configuration_url="https://ca.account.sony.com/api/v1/ssocookie",
-        )
-
     def __init__(self, coordinator) -> None:
         """Initialize PSN MediaPlayer."""
-        super().__init__(self, coordinator)
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self.data = self.coordinator.data
 
     @property
@@ -131,84 +112,11 @@ class MediaPlayer(CoordinatorEntity[PsnCoordinator], MediaPlayerEntity):
 
     @property
     def is_on(self):
-        return self.data.get("available") == True
-
-    # async def async_update(self) -> None:
-    #     # user = await self._psn.user(online_id="JackPowell")
-    #     presence = await self._psn.get("user").get_presence()
-    #     real_presence = {"presence": presence}
-    #     self._psn.update(real_presence)
-
-    #     self._parse_response()
+        """Is user available on PSN"""
+        return self.data.get("available") is True
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
 
-        # self._attr_native_value = self.entity_description.value_fn(
-        #     self.coordinator.data
-        # )
         self.async_write_ha_state()
-
-    # def _parse_response(self) -> PSNdata:
-    #     data = PSNdata()
-
-    #     data.platform["status"] = (
-    #         self._psn.get("presence")
-    #         .get("basicPresence")
-    #         .get("primaryPlatformInfo")
-    #         .get("onlineStatus")
-    #     )
-
-    #     data.platform["platform"] = (
-    #         self._psn.get("presence")
-    #         .get("basicPresence")
-    #         .get("primaryPlatformInfo")
-    #         .get("platform")
-    #     )
-
-    #     data.account["id"] = self._psn.get("user").account_id
-    #     data.account["handle"] = self._psn.get("user").online_id
-    #     data.presence["availability"] = (
-    #         self._psn.get("presence").get("basicPresence").get("availability")
-    #     )
-    #     data.presence["lastAvailableDate"] = (
-    #         self._psn.get("presence").get("basicPresence").get("lastAvailableDate")
-    #     )
-
-    #     if data.platform.get("status") == "online":
-    #         gameTitle = (
-    #             self._psn.get("presence").get("basicPresence").get("gameTitleInfoList")
-    #         )
-    #         if gameTitle:
-    #             data.title["name"] = gameTitle[0].get("titleName")
-    #             data.title["playing"] = True
-
-    #         data.title["format"] = (
-    #             self._psn.get("presence")
-    #             .get("basicPresence")
-    #             .get("gameTitleInfoList")[0]
-    #             .get("format")
-    #         )
-
-    #         if data.title["format"].casefold() == "ps5":
-    #             data.title["imageURL"] = (
-    #                 self._psn.get("presence")
-    #                 .get("basicPresence")
-    #                 .get("gameTitleInfoList")[0]
-    #                 .get("conceptIconUrl")
-    #             )
-    #         if data.title["format"].casefold() == "ps4":
-    #             data.title["imageURL"] = (
-    #                 self._psn.get("presence")
-    #                 .get("basicPresence")
-    #                 .get("gameTitleInfoList")[0]
-    #                 .get("npTitleIconUrl")
-    #             )
-    #     else:
-    #         data.title["name"] = ""
-    #         data.title["format"] = ""
-    #         data.title["imageURL"] = None
-    #         data.title["playing"] = False
-
-    #     return data

@@ -1,4 +1,5 @@
 """Binary sensor platform for Unfolded Circle."""
+
 import logging
 
 from homeassistant.components.binary_sensor import (
@@ -7,7 +8,6 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, PSN_API
@@ -41,20 +41,6 @@ class BinarySensor(BinarySensorEntity):
     """Binary Sensor representing online status"""
 
     device_class = BinarySensorDeviceClass.PRESENCE
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return the device info."""
-        return DeviceInfo(
-            identifiers={
-                # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, "PSN")
-            },
-            name="PSN",
-            manufacturer="Sony",
-            model="Playstation Network",
-            configuration_url="https://ca.account.sony.com/api/v1/ssocookie",
-        )
 
     def __init__(self, api) -> None:
         """Initialize the sensor."""

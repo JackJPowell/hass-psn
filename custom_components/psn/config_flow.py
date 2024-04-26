@@ -1,18 +1,23 @@
-"""Config flow for Unfolded Circle Remote integration."""
+"""Config flow for the Playstation Network integration."""
+
 import logging
 from typing import Any
 
-from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
-from psnawp_api.psnawp import PSNAWP
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import (
+    ConfigEntryAuthFailed,
+    ConfigEntryNotReady,
+    HomeAssistantError,
+)
+from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
+from psnawp_api.psnawp import PSNAWP
 
 from .const import DOMAIN
+from .coordinator import PsnCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,19 +30,25 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
     try:
-        #
-        npsso = data.get("npsso")
+        npsso = data.data.get("npsso")
         psn = await PSNAWP.create(npsso)
-        user = await psn.user(online_id="JackPowell")
-        data = await user.get_presence()
-    except PSNAWPAuthenticationError:
-        raise InvalidAuth("Unable to login using the supplied NPsso token")
+    except PSNAWPAuthenticationError as error:
+        raise ConfigEntryAuthFailed(error) from error
+    except Exception as ex:
+        raise ConfigEntryNotReady(ex) from ex
+
+    try:
+        user = await psn.user(online_id="me")
+        client = await psn.me()
+        coordinator = PsnCoordinator(hass, psn, user, client)
+    except Exception as ex:
+        raise ConfigEntryNotReady(ex) from ex
 
     # Return info that you want to store in the config entry.
     return {
         "title": "Playstation Network",
         "npsso": npsso,
-        "username": "JackPowell",
+        "username": coordinator.data.username,
         "data": data,
     }
 

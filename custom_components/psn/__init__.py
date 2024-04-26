@@ -1,36 +1,52 @@
 """The PSN integration."""
+
 from __future__ import annotations
 
-from psnawp_api.psnawp import PSNAWP
+import logging
 
-from config.custom_components.psn.coordinator import PsnCoordinator
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import discovery
+from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
+from psnawp_api.psnawp import PSNAWP
 
 from .const import DOMAIN, PSN_API, PSN_COORDINATOR
+from .coordinator import PsnCoordinator
 
 PLATFORMS: list[Platform] = [
     Platform.MEDIA_PLAYER,
     Platform.SENSOR,
 ]
 
+_LOGGER: logging.Logger = logging.getLogger(__package__)
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PSN from a config entry."""
 
-    npsso = entry.data.get("npsso")
-    psn = await PSNAWP.create(npsso)
-    user = await psn.user(online_id="me")
-    client = await psn.me()
-    coordinator = PsnCoordinator(hass, psn, user, client)
+    try:
+        npsso = entry.data.get("npsso")
+        psn = await PSNAWP.create(npsso)
+    except PSNAWPAuthenticationError as error:
+        raise ConfigEntryAuthFailed(error) from error
+    except Exception as ex:
+        raise ConfigEntryNotReady(ex) from ex
+
+    try:
+        user = await psn.user(online_id="me")
+        client = await psn.me()
+        coordinator = PsnCoordinator(hass, psn, user, client)
+    except Exception as ex:
+        raise ConfigEntryNotReady(ex) from ex
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
         PSN_COORDINATOR: coordinator,
         PSN_API: psn,
     }
 
+    await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
 

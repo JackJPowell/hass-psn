@@ -1,7 +1,8 @@
 """Platform for sensor integration."""
+
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-import logging
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -33,7 +34,7 @@ def get_status(coordinator_data: any) -> dict[str, str]:
     match coordinator_data.get("platform").get("onlineStatus"):
         case "online":
             if (
-                coordinator_data.get("available") == True
+                coordinator_data.get("available") is True
                 and coordinator_data.get("title_metadata").get("npTitleId") is not None
             ):
                 return "Playing"
@@ -171,20 +172,6 @@ class PsnSensor(CoordinatorEntity[PsnCoordinator], SensorEntity):
         self._attr_unique_id = f"psn_{description.unique_id}"
         self.entity_description = description
         self._state = 0
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return the device info."""
-        return DeviceInfo(
-            identifiers={
-                # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, "PSN")
-            },
-            name="PSN",
-            manufacturer="Sony",
-            model="Playstation Network",
-            configuration_url="https://ca.account.sony.com/api/v1/ssocookie",
-        )
 
     # This property is important to let HA know if this entity is online or not.
     # If an entity is offline (return False), the UI will refelect this.
