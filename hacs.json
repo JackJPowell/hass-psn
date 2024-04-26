@@ -1,6 +1,6 @@
 {
   "name": "PSN",
-  "domains": ["media_player", "sensor"],
+  "domains": ["media_player", "sensor", "binary_sensor", "notify"],
   "homeassistant": "2023.12.0",
   "iot_class": "Cloud Polling",
   "render_readme": true,
