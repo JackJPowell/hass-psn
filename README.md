@@ -8,7 +8,7 @@
 
 ## Playstation Network for Home Assistant
 
-Home Assistant integration for the [Playstation Netowrk](https://www.psn.com/).
+Home Assistant integration for the [Playstation Network](https://www.psn.com/).
 
 ## Installation
 
@@ -76,12 +76,12 @@ data: {
 }
 ```
 
-> [!TIP] > When more than one user is supplied in a list, a group conversation will be created
+> [!TIP] When more than one user is supplied in a list, a group conversation will be created
 
 ## Future Ideas
 
-- [] Extract additional game information
-- [] Display friends who are online
+- [ ] Extract additional game information
+- [ ] Display friends who are online
 
 ## Notes
 
