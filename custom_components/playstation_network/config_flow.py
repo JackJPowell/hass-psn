@@ -30,7 +30,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
     try:
-        npsso = data.data.get("npsso")
+        npsso = data.get("npsso")
         psn = await PSNAWP.create(npsso)
     except PSNAWPAuthenticationError as error:
         raise ConfigEntryAuthFailed(error) from error
@@ -41,6 +41,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
         user = await psn.user(online_id="me")
         client = await psn.me()
         coordinator = PsnCoordinator(hass, psn, user, client)
+        await coordinator._async_update_data()
     except Exception as ex:
         raise ConfigEntryNotReady(ex) from ex
 
@@ -48,7 +49,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     return {
         "title": "Playstation Network",
         "npsso": npsso,
-        "username": coordinator.data.username,
+        "username": coordinator.data.get("username"),
         "data": data,
     }
 

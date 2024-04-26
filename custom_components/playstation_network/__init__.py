@@ -45,7 +45,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         PSN_COORDINATOR: coordinator,
         PSN_API: psn,
     }
-
+    await coordinator._async_update_data()
     await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
@@ -56,7 +56,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             Platform.NOTIFY,
             DOMAIN,
             {CONF_NAME: entry.title, "entry_id": entry.entry_id},
-            hass.data["psn"],
+            hass.data[DOMAIN],
         )
     )
 

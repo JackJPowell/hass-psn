@@ -2,7 +2,7 @@
 
 from datetime import timedelta
 
-DOMAIN = "psn"
+DOMAIN = "playstation_network"
 DEVICE_SCAN_INTERVAL = timedelta(seconds=30)
 PSN_COORDINATOR = "psn_coordinator"
 PSN_API = "psn_api"
