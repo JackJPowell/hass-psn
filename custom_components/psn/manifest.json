@@ -1,10 +1,10 @@
 {
-  "domain": "psn",
-  "name": "Playstation",
+  "domain": "playstation_network",
+  "name": "Playstation Network",
   "codeowners": ["@jackjpowell"],
   "config_flow": true,
   "dependencies": ["network"],
-  "version": "0.0.4",
+  "version": "0.1.0",
   "documentation": "https://github.com/JackJPowell/hass-psn",
   "homekit": {},
   "integration_type": "device",
