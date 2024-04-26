@@ -1,11 +1,16 @@
 """Support for PSN Send Message service."""
+
 from __future__ import annotations
+
+import logging
 
 from homeassistant.components.notify import ATTR_TARGET, BaseNotificationService
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 from .const import DOMAIN, PSN_API
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def get_service(
@@ -42,3 +47,4 @@ class PsnNotificationService(BaseNotificationService):
 
         group = await self.psn.group(users_list=user_list)
         response = await group.send_message(message)
+        _LOGGER.debug("Send Message Response: %s", response)

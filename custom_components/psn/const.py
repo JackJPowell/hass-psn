@@ -1,4 +1,5 @@
-"""Constants for the Upsn integration."""
+"""Constants for the psn integration."""
+
 from datetime import timedelta
 
 DOMAIN = "psn"

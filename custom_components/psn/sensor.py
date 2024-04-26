@@ -10,19 +10,17 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import StateType
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, PSN_COORDINATOR
-from .coordinator import PsnCoordinator
+from .entity import PSNEntity
 
 _LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
 class PsnSensorEntityDescription(SensorEntityDescription):
-    """Class describing Unfolded Circle Remote sensor entities."""
+    """Class describing PSN sensor entities."""
 
     value_fn: Callable = None
     attributes_fn: Callable = None
@@ -31,6 +29,7 @@ class PsnSensorEntityDescription(SensorEntityDescription):
 
 
 def get_status(coordinator_data: any) -> dict[str, str]:
+    """Returns online status"""
     match coordinator_data.get("platform").get("onlineStatus"):
         case "online":
             if (
@@ -47,6 +46,7 @@ def get_status(coordinator_data: any) -> dict[str, str]:
 
 
 def get_status_attr(coordinator_data: any) -> dict[str, str]:
+    """Parses status attributes"""
     if coordinator_data.get("title_metadata").get("npTitleId") is not None:
         attrs: dict[str, str] = {
             "name": "",
@@ -160,25 +160,22 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
     )
 
 
-class PsnSensor(CoordinatorEntity[PsnCoordinator], SensorEntity):
+class PsnSensor(PSNEntity, SensorEntity):
     """PSN Sensor Class."""
 
-    entity_description: PSN_SENSOR
+    entity_description = PSN_SENSOR
 
     def __init__(self, coordinator, description: PsnSensorEntityDescription) -> None:
         """Initialize PSN Sensor."""
-        super().__init__(self, coordinator)
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self._attr_unique_id = f"psn_{description.unique_id}"
         self.entity_description = description
         self._state = 0
 
-    # This property is important to let HA know if this entity is online or not.
-    # If an entity is offline (return False), the UI will refelect this.
     @property
     def available(self) -> bool:
         """Return if available."""
-        return True  # self.coordinator.api.online
+        return True
 
     @callback
     def _handle_coordinator_update(self) -> None:

@@ -13,7 +13,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry):
     coordinator = hass.data[DOMAIN][config_entry.entry_id][PSN_COORDINATOR]
 
 
-class PSNEntity(CoordinatorEntity[PSN_COORDINATOR]):
+class PSNEntity(CoordinatorEntity[PsnCoordinator]):
     """Common entity class for all PSN entities"""
 
     def __init__(self, coordinator) -> None:

@@ -17,7 +17,7 @@
       },
       "reauth_confirm": {
         "data": {
-          "pin": "NPSSO Code"
+          "npsso": "NPSSO Code"
         },
         "title": "Reauthenticate with new NPSSO Code"
       }

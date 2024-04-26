@@ -29,6 +29,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
 
         self.hass = hass
+        self.entities = []
         self.api = api
         self.user = user
         self.client = client
