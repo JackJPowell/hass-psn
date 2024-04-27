@@ -68,9 +68,9 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
             case "online":
                 return MediaPlayerState.ON
             case "offline":
-                return MediaPlayerState.STANDBY
+                return MediaPlayerState.OFF
             case _:
-                return MediaPlayerState.STANDBY
+                return MediaPlayerState.OFF
 
     @property
     def unique_id(self):
@@ -92,7 +92,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
         if self.data.get("platform").get("onlineStatus") == "online":
             return "Playstation Online"
         else:
-            return "Playstation Offline"
+            return None
 
     @property
     def app_name(self):
