@@ -9,7 +9,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
-from psnawp_api.psnawp import PSNAWP
 
 from .const import DEVICE_SCAN_INTERVAL, DOMAIN
 
@@ -90,4 +89,3 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed(
                 f"Error communicating with the Playstation Network {ex}"
             ) from ex
-        _LOGGER.debug("PSN Data Update values")
