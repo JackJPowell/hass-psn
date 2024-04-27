@@ -106,7 +106,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
             if title.get("format").casefold() == "ps5":
                 return title.get("conceptIconUrl")
 
-            if title == "ps4":
+            if title.get("format").casefold() == "ps4":
                 return title.get("npTitleIconUrl")
         return "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/PlayStation_logo2.svg/512px-PlayStation_logo2.svg.png?20210920040209"
 

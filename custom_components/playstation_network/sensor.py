@@ -108,19 +108,19 @@ def get_trophy_attr(coordinator_data: any) -> dict[str, str]:
 
 
 PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
-    PsnSensorEntityDescription(
-        key="friends",
-        native_unit_of_measurement="friends",
-        suggested_unit_of_measurement="friends",
-        description="Your Online PSN Friends",
-        name="Friends Online",
-        icon="mdi:account-group",
-        entity_registry_enabled_default=True,
-        has_entity_name=False,
-        unique_id="friends_online",
-        value_fn=lambda data: len(data.get("friends")),
-        attributes_fn=lambda data: {},
-    ),
+    # PsnSensorEntityDescription(
+    #     key="friends",
+    #     native_unit_of_measurement="friends",
+    #     suggested_unit_of_measurement="friends",
+    #     description="Your Online PSN Friends",
+    #     name="Friends Online",
+    #     icon="mdi:account-group",
+    #     entity_registry_enabled_default=True,
+    #     has_entity_name=False,
+    #     unique_id="friends_online",
+    #     value_fn=lambda data: len(data.get("friends")),
+    #     attributes_fn=lambda data: {},
+    # ),
     PsnSensorEntityDescription(
         key="trophy_summary",
         native_unit_of_measurement="Trophy Level",
@@ -189,8 +189,7 @@ class PsnSensor(PSNEntity, SensorEntity):
     @property
     def native_value(self) -> StateType:
         """Return native value for entity."""
-        self._state = self.entity_description.value_fn(self.coordinator.data)
-        return self._state
+        return self.entity_description.value_fn(self.coordinator.data)
 
     @property
     def extra_state_attributes(self) -> dict[str, str]:

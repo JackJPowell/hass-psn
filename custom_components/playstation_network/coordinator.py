@@ -36,6 +36,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.data = {
             "presence": {},
             "available": False,
+            "online_status": False,
             "platform": {},
             "title_metadata": {},
             "friends": [],
@@ -58,13 +59,16 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self.data["platform"] = (
                 self.data["presence"].get("basicPresence").get("primaryPlatformInfo")
             )
-            if self.data["available"] is True:
+            try:
                 self.data["title_metadata"] = (
                     self.data["presence"]
                     .get("basicPresence")
                     .get("gameTitleInfoList")[0]
                 )
-            self.data["friends"] = await self.client.available_to_play()
+            except Exception:
+                self.data["title_metadata"] = {}
+
+            # self.data["friends"] = await self.client.available_to_play()
             self.data["trophy_summary"] = await self.client.trophy_summary()
 
             if (
