@@ -97,7 +97,6 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
     @property
     def app_name(self):
         return ""
-        # return self.data.title.get("name")
 
     @property
     def media_image_url(self):
