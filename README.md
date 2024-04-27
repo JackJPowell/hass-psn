@@ -42,7 +42,7 @@ There is a config flow for this integration. After installing the custom compone
 4. _You will now begin the configuration flow process_
 5. **NPSSO** can be found via the following steps:
    1. Login to your [Playstation](https://playstation.com) account
-   2. Follow this link to be presented with your NPSSO code
+   2. Follow [this link](https://ca.account.sony.com/api/v1/ssocookie) to be presented with your NPSSO code
    3. Only copy the alphanumeric string after "npsso": Do not copy the quotes
 
 ## Usage
