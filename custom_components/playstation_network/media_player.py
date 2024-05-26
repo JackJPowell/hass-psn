@@ -45,7 +45,6 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
     """Media player entity representing currently playing game"""
 
     device_class = MediaPlayerDeviceClass.TV
-    _attr_supported_features = None
 
     def __init__(self, coordinator) -> None:
         """Initialize PSN MediaPlayer."""
