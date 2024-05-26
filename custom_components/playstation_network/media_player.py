@@ -44,10 +44,8 @@ async def async_setup_entry(
 class MediaPlayer(PSNEntity, MediaPlayerEntity):
     """Media player entity representing currently playing game"""
 
-    device_class = MediaPlayerDeviceClass.RECEIVER
-    _attr_supported_features = (
-        MediaPlayerEntityFeature.TURN_OFF | MediaPlayerEntityFeature.TURN_ON
-    )
+    device_class = MediaPlayerDeviceClass.TV
+    _attr_supported_features = None
 
     def __init__(self, coordinator) -> None:
         """Initialize PSN MediaPlayer."""
@@ -66,7 +64,13 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
     def state(self):
         match self.data.get("platform").get("onlineStatus"):
             case "online":
-                return MediaPlayerState.ON
+                if (
+                    self.data.get("available") is True
+                    and self.data.get("title_metadata").get("npTitleId") is not None
+                ):
+                    return MediaPlayerState.PLAYING
+                else:
+                    return MediaPlayerState.ON
             case "offline":
                 return MediaPlayerState.OFF
             case _:
@@ -90,7 +94,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
         if self.data.get("title_metadata").get("npTitleId"):
             return self.data.get("title_metadata").get("titleName")
         if self.data.get("platform").get("onlineStatus") == "online":
-            return "Playstation Online"
+            return "Browsing the Menu"
         else:
             return None
 
