@@ -44,13 +44,16 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "title_trophies": {},
             "title_stats": {},
             "username": "",
+            "recent_titles": [],
         }
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Get the latest data from the PSN."""
         try:
             self.data["username"] = self.user.online_id
-            self.data["presence"] = await self.user.get_presence()
+            self.data["presence"] = await self.hass.async_add_executor_job(
+                lambda: self.user.get_presence()
+            )
             self.data["available"] = (
                 self.data["presence"].get("basicPresence").get("availability")
                 == "availableToPlay"
@@ -68,18 +71,36 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self.data["title_metadata"] = {}
 
             # self.data["friends"] = await self.client.available_to_play()
-            self.data["trophy_summary"] = await self.client.trophy_summary()
+            self.data["trophy_summary"] = await self.hass.async_add_executor_job(
+                lambda: self.client.trophy_summary()
+            )
 
             if (
                 self.data["available"] is True
                 and self.data["title_metadata"].get("npTitleId") is not None
             ):
                 title_id = self.data["title_metadata"].get("npTitleId")
-                title = self.api.game_title(title_id, "me", title_id)
-                self.data["title_details"] = await title.get_details()
-                trophy_title = self.api.trophy_titles()
-                self.data["title_trophies"] = (
-                    await trophy_title.get_trophy_summary_for_title([title_id])
+                title = await self.hass.async_add_executor_job(
+                    lambda: self.api.game_title(title_id, "me")
+                )
+                self.data["title_details"] = await self.hass.async_add_executor_job(
+                    lambda: title.get_details()
+                )
+
+                trophy_titles = await self.hass.async_add_executor_job(
+                    lambda: self.client.trophy_titles_for_title(
+                        title_ids=[title.title_id]
+                    )
+                )
+                await self.hass.async_add_executor_job(
+                    lambda: self.get_trophies(trophy_titles)
+                )
+
+                titles_with_stats = await self.hass.async_add_executor_job(
+                    lambda: self.client.title_stats(limit=5)
+                )
+                await self.hass.async_add_executor_job(
+                    lambda: self.get_titles(titles_with_stats)
                 )
 
             return self.data
@@ -89,3 +110,11 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed(
                 f"Error communicating with the Playstation Network {ex}"
             ) from ex
+
+    def get_titles(self, titles):
+        for title in titles:
+            self.data["recent_titles"].append(title)
+
+    def get_trophies(self, trophy_titles):
+        for trophy_title in trophy_titles:
+            self.data["title_trophies"] = trophy_title

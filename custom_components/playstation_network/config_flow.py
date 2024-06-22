@@ -31,15 +31,15 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     """
     try:
         npsso = data.get("npsso")
-        psn = await PSNAWP.create(npsso)
+        psn = PSNAWP(npsso)
     except PSNAWPAuthenticationError as error:
         raise ConfigEntryAuthFailed(error) from error
     except Exception as ex:
         raise ConfigEntryNotReady(ex) from ex
 
     try:
-        user = await psn.user(online_id="me")
-        client = await psn.me()
+        user = await hass.async_add_executor_job(lambda: psn.user(online_id="me"))
+        client = psn.me()
         coordinator = PsnCoordinator(hass, psn, user, client)
         await coordinator._async_update_data()
     except Exception as ex:

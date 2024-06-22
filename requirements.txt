@@ -1,16 +1,16 @@
 # Home Assistant
-homeassistant>=2024.4
+homeassistant>=2024.6
 home-assistant-frontend
 
 # Integration
-PSNAWP-ASYNC==0.0.4
+PSNAWP-HA==0.1.0
 
 # Development
-black
+black==24.4.2
 colorlog==6.7.0
 pip>=24.0
 pylint>=3.0.3
-ruff==0.0.255
+ruff==0.4.4
 rel~=0.4.9.6
 requests~=2.31.0
 voluptuous~=0.13.1

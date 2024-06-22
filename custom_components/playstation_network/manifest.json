@@ -4,11 +4,11 @@
   "codeowners": ["@jackjpowell"],
   "config_flow": true,
   "dependencies": ["network"],
-  "version": "0.1.2",
+  "version": "0.2.0",
   "documentation": "https://github.com/JackJPowell/hass-psn",
   "homekit": {},
   "integration_type": "device",
   "iot_class": "cloud_polling",
-  "requirements": ["PSNAWP-ASYNC==0.0.4"],
+  "requirements": ["PSNAWP-HA==0.1.0"],
   "ssdp": []
 }
