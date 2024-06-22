@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
     MediaPlayerEntity,
-    MediaPlayerEntityFeature,
     MediaPlayerState,
     MediaType,
 )
@@ -93,7 +92,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
         if self.data.get("title_metadata").get("npTitleId"):
             return self.data.get("title_metadata").get("titleName")
         if self.data.get("platform").get("onlineStatus") == "online":
-            return "Browsing the Menu"
+            return "Browsing the menu"
         else:
             return None
 

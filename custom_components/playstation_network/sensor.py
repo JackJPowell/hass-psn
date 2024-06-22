@@ -3,6 +3,7 @@
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -53,6 +54,8 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
             "description": "",
             "platform": "",
             "contentRating": "",
+            "play_count": "",
+            "play_duration": "",
             "starRating": "",
             "trophies": {
                 "platinum": 0,
@@ -69,7 +72,7 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         }
 
         title = coordinator_data.get("title_details")[0]
-        title_trophies = coordinator_data.get("title_trophies")[0]
+        title_trophies = coordinator_data.get("title_trophies")
 
         attrs["name"] = title.get("name")
         attrs["description"] = title.get("descriptions")[0].get("desc")
@@ -83,9 +86,28 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         attrs["starRating"] = title.get("starRating").get("score")
         attrs["trophies"] = title_trophies.defined_trophies
         attrs["earned_trophies"] = title_trophies.earned_trophies
+
+        for t in coordinator_data["recent_titles"]:
+            if t.title_id == coordinator_data.get("title_metadata").get("npTitleId"):
+                title_stats = t
+                break
+
+        attrs["play_count"] = title_stats.play_count
+        attrs["play_duration"] = convert_time(duration=title_stats.play_duration)
     else:
         attrs = {}
     return attrs
+
+
+def convert_time(duration: datetime) -> str:
+    minutes = divmod(duration.seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    if duration.days > 1:
+        return f"{duration.days} Days {hours}h"
+    if duration.days == 1:
+        return f"{duration.days} Day {hours}h"
+    if duration.days == 0:
+        return f"{hours}h {minutes}m"
 
 
 def get_trophy_attr(coordinator_data: any) -> dict[str, str]:
