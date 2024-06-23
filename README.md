@@ -16,7 +16,7 @@ There are two main ways to install this custom component within your Home Assist
 
 1. Using HACS (see https://hacs.xyz/ for installation instructions if you do not already have it installed):
 
-    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JackJPowell&repository=hass-unfoldedcircle&category=Integration)
+    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JackJPowell&repository=hass-psn&category=Integration)
 
    Or
    
