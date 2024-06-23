@@ -100,7 +100,7 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
 
 
 def convert_time(duration: datetime) -> str:
-    minutes = divmod(duration.seconds, 60)
+    minutes, seconds = divmod(duration.seconds, 60)
     hours, minutes = divmod(minutes, 60)
     if duration.days > 1:
         return f"{duration.days} Days {hours}h"
