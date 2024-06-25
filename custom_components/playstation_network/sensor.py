@@ -53,10 +53,10 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
             "name": "",
             "description": "",
             "platform": "",
-            "contentRating": "",
+            "content_rating": "",
             "play_count": "",
             "play_duration": "",
-            "starRating": "",
+            "star_rating": "",
             "trophies": {
                 "platinum": 0,
                 "gold": 0,
@@ -82,8 +82,8 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
             .get("gameTitleInfoList")[0]
             .get("format")
         )
-        attrs["contentRating"] = title.get("contentRating").get("description")
-        attrs["starRating"] = title.get("starRating").get("score")
+        attrs["content_rating"] = title.get("contentRating").get("description")
+        attrs["star_rating"] = title.get("starRating").get("score")
         attrs["trophies"] = title_trophies.defined_trophies
         attrs["earned_trophies"] = title_trophies.earned_trophies
 
