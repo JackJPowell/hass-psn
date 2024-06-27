@@ -38,6 +38,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         user = await hass.async_add_executor_job(lambda: psn.user(online_id="me"))
         client = psn.me()
         coordinator = PsnCoordinator(hass, psn, user, client)
+    except PSNAWPAuthenticationError as error:
+        raise ConfigEntryAuthFailed(error) from error
     except Exception as ex:
         raise ConfigEntryNotReady(ex) from ex
 
@@ -45,7 +47,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         PSN_COORDINATOR: coordinator,
         PSN_API: psn,
     }
-    # await coordinator._async_update_data()
+    if entry.unique_id is None:
+        hass.config_entries.async_update_entry(entry, unique_id=user.online_id)
     await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
