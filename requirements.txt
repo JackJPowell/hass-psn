@@ -1,5 +1,5 @@
 # Home Assistant
-homeassistant>=2024.6
+homeassistant>=2024.6.4
 home-assistant-frontend
 
 # Integration
@@ -12,6 +12,6 @@ pip>=24.0
 pylint>=3.0.3
 ruff==0.4.4
 rel~=0.4.9.6
-requests~=2.31.0
+requests~=2.32.3
 voluptuous~=0.13.1
 ha-ffmpeg
