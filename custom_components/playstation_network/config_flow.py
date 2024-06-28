@@ -8,7 +8,7 @@ from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import CONF_USERNAME
 from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResult
+from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.exceptions import (
     ConfigEntryAuthFailed,
     ConfigEntryNotReady,
@@ -91,9 +91,11 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
                 info[CONF_USERNAME]
             )
         except CannotConnect:
-            errors["base"] = "cannot_connect"
+            errors = {"base": "Cannot Connect"}
         except InvalidAuth:
-            errors["base"] = "invalid_auth"
+            errors = {"base": "Invalid Authentication"}
+        except AbortFlow:
+            errors = {"base": "This account is already configured"}
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
@@ -135,9 +137,9 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
         try:
             info = await validate_input(self.hass, user_input)
         except CannotConnect:
-            errors["base"] = "cannot_connect"
+            errors = {"base": "Cannot Connect"}
         except InvalidAuth:
-            errors["base"] = "invalid_auth"
+            errors = {"base": "Invalid Authentication"}
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
             errors["base"] = "unknown"
