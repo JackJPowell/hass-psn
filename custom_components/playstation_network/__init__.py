@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 
+import homeassistant.helpers.device_registry as dr
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, Platform
 from homeassistant.core import HomeAssistant
@@ -50,6 +51,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if entry.unique_id is None:
         hass.config_entries.async_update_entry(entry, unique_id=user.online_id)
     await coordinator.async_config_entry_first_refresh()
+    _migrate_device_identifiers(hass, entry.entry_id, coordinator)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
 
@@ -77,3 +79,19 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update Listener."""
     await hass.config_entries.async_reload(entry.entry_id)
+
+
+def _migrate_device_identifiers(
+    hass: HomeAssistant, entry_id: str, coordinator
+) -> None:
+    """Migrate old device identifiers."""
+    dev_reg = dr.async_get(hass)
+    devices: list[dr.DeviceEntry] = dr.async_entries_for_config_entry(dev_reg, entry_id)
+    for device in devices:
+        old_identifier = list(next(iter(device.identifiers)))
+        if old_identifier[1] == "PSN":
+            new_identifier = {(DOMAIN, coordinator.data.get("username"))}
+            _LOGGER.debug(
+                "migrate identifier '%s' to '%s'", device.identifiers, new_identifier
+            )
+            dev_reg.async_update_device(device.id, new_identifiers=new_identifier)
