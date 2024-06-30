@@ -49,6 +49,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
         """Initialize PSN MediaPlayer."""
         super().__init__(coordinator)
         self.data = self.coordinator.data
+        self._attr_has_entity_name = True
 
     @property
     def icon(self):
@@ -76,7 +77,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
 
     @property
     def unique_id(self):
-        return f"{self.data.get('platform').get('platform')}_console"
+        return f"{self.data.get('username')}_{self.data.get('platform').get('platform')}_console"
 
     @property
     def name(self):

@@ -5,11 +5,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorEntityDescription,
-)
+from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
+                                             SensorEntityDescription)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.typing import StateType
 
@@ -146,26 +143,23 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
     PsnSensorEntityDescription(
         key="trophy_summary",
         native_unit_of_measurement="Trophy Level",
-        suggested_unit_of_measurement="",
-        description="Your PSN Trophies",
-        name="Playstation Trophy Level",
+        name="Trophy Level",
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
-        has_entity_name=False,
-        unique_id="psn_trophies",
+        has_entity_name=True,
+        unique_id="trophies",
         value_fn=lambda data: data.get("trophy_summary").trophy_level,
         attributes_fn=get_trophy_attr,
     ),
     PsnSensorEntityDescription(
         key="status",
         device_class=SensorDeviceClass.ENUM,
-        description="Your PSN Status",
-        name="PSN Status",
+        name="Status",
         icon="mdi:account-circle-outline",
         options=["Online", "Offline", "Playing"],
         entity_registry_enabled_default=True,
-        has_entity_name=False,
-        unique_id="psn_status",
+        has_entity_name=True,
+        unique_id="status",
         value_fn=get_status,
         attributes_fn=get_status_attr,
     ),
@@ -190,7 +184,8 @@ class PsnSensor(PSNEntity, SensorEntity):
     def __init__(self, coordinator, description: PsnSensorEntityDescription) -> None:
         """Initialize PSN Sensor."""
         super().__init__(coordinator)
-        self._attr_unique_id = f"psn_{description.unique_id}"
+        self._attr_unique_id = f"{coordinator.data.get("username")}_{description.unique_id}"
+        self._attr_name = f"{description.name}"
         self.entity_description = description
         self._state = 0
 
