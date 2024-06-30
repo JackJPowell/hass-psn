@@ -6,9 +6,11 @@
   <img alt="Playstation Network logo" src="https://brands.home-assistant.io/playstation_network/logo.png">
 </picture>
 
-## Playstation Network for Home Assistant
-
-Home Assistant integration for the [Playstation Network](https://www.psn.com/).
+## [Playstation Network](https://www.psn.com/) for Home Assistant
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/JackJPowell/hass-psn/assets/7500683/7e6d7acd-e384-49aa-9e8f-ae589eadb4d7">
+  <img alt="Example Implementation" src="https://github.com/JackJPowell/hass-psn/assets/7500683/7e6d7acd-e384-49aa-9e8f-ae589eadb4d7">
+</picture>
 
 ## Installation
 
