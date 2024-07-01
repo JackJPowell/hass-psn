@@ -146,8 +146,8 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         name="Trophy Level",
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
-        has_entity_name=False,
-        unique_id="psn_trophies",
+        has_entity_name=True,
+        unique_id="trophies",
         value_fn=lambda data: data.get("trophy_summary").trophy_level,
         attributes_fn=get_trophy_attr,
     ),
@@ -158,8 +158,8 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:account-circle-outline",
         options=["Online", "Offline", "Playing"],
         entity_registry_enabled_default=True,
-        has_entity_name=False,
-        unique_id="psn_status",
+        has_entity_name=True,
+        unique_id="status",
         value_fn=get_status,
         attributes_fn=get_status_attr,
     ),
@@ -184,8 +184,9 @@ class PsnSensor(PSNEntity, SensorEntity):
     def __init__(self, coordinator, description: PsnSensorEntityDescription) -> None:
         """Initialize PSN Sensor."""
         super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.data.get("username")}_{description.unique_id}"
-        self._attr_unique_id = f"psn_{description.unique_id}"
+        self.entity_id = f"{DOMAIN}.{coordinator.data.get("username")}_{description.unique_id}"
+        #self._attr_unique_id = f"{coordinator.data.get("username")}_{description.unique_id}"
+        # self._attr_unique_id = f"psn_{description.unique_id}"
         self._attr_name = f"{description.name}"
         self.entity_description = description
         self._state = 0
