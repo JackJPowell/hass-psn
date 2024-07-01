@@ -184,9 +184,7 @@ class PsnSensor(PSNEntity, SensorEntity):
     def __init__(self, coordinator, description: PsnSensorEntityDescription) -> None:
         """Initialize PSN Sensor."""
         super().__init__(coordinator)
-        self.entity_id = f"sensor.{coordinator.data.get("username").lower()}_{description.unique_id}"
-        #self._attr_unique_id = f"{coordinator.data.get("username")}_{description.unique_id}"
-        # self._attr_unique_id = f"psn_{description.unique_id}"
+        self._attr_unique_id = f"{coordinator.data.get("username")}_{description.unique_id}"
         self._attr_name = f"{description.name}"
         self.entity_description = description
         self._state = 0

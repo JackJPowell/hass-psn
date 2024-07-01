@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import logging
 
-import homeassistant.helpers.device_registry as dr
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import discovery
+from homeassistant.helpers import entity_registry as er
 from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
 from psnawp_api.psnawp import PSNAWP
 
@@ -26,6 +27,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PSN from a config entry."""
+
+    await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
 
     try:
         npsso = entry.data.get("npsso")
@@ -95,3 +98,22 @@ def _migrate_device_identifiers(
                 "migrate identifier '%s' to '%s'", device.identifiers, new_identifier
             )
             dev_reg.async_update_device(device.id, new_identifiers=new_identifier)
+
+
+@callback
+def async_migrate_entity_entry(entry: er.RegistryEntry) -> dict[str, Any] | None:
+    """Migrate PSN entity entries.
+
+    - Migrates old unique ID's from old sensors and media players to the new unique ID's
+    """
+    if entry.domain == Platform.SENSOR and entry.unique_id.endswith(
+        "-relative_humidity"
+    ):
+        return {
+            "new_unique_id": entry.unique_id.replace("-relative_humidity", "-humidity")
+        }
+    if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id.endswith("-plug"):
+        return {"new_unique_id": entry.unique_id.replace("-plug", "-relay")}
+
+    # No migration needed
+    return None

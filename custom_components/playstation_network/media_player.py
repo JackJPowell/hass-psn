@@ -50,7 +50,6 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
         super().__init__(coordinator)
         self.data = self.coordinator.data
         self._attr_has_entity_name = True
-        self.entity_id = f"media_player.{self.data.get('username').lower()}_{self.data.get('platform').get('platform').lower()}_console"
 
     @property
     def icon(self):
@@ -76,9 +75,9 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
             case _:
                 return MediaPlayerState.OFF
 
-    # @property
-    # def entity_id(self):
-    #     return f"media_player.{self.data.get('username').lower()}_{self.data.get('platform').get('platform').lower()}_console"
+    @property
+    def unique_id(self):
+        return f"{self.data.get('username')}_{self.data.get('platform').get('platform')}_console"
 
     @property
     def name(self):
