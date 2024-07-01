@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, Platform
@@ -106,14 +107,29 @@ def async_migrate_entity_entry(entry: er.RegistryEntry) -> dict[str, Any] | None
 
     - Migrates old unique ID's from old sensors and media players to the new unique ID's
     """
-    if entry.domain == Platform.SENSOR and entry.unique_id.endswith(
-        "-relative_humidity"
-    ):
+    coordinator = entry.entry_id[PSN_COORDINATOR]
+    if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_status"):
+        new = f"{coordinator.data.get("username").lower()}_psn_status"
         return {
-            "new_unique_id": entry.unique_id.replace("-relative_humidity", "-humidity")
+            "new_unique_id": entry.unique_id.replace(
+                "psn_psn_status", new
+            )
         }
-    if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id.endswith("-plug"):
-        return {"new_unique_id": entry.unique_id.replace("-plug", "-relay")}
+
+    if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_trophies"):
+        new = f"{coordinator.data.get("username").lower()}_trophy_level"
+        return {
+            "new_unique_id": entry.unique_id.replace(
+                "psn_psn_trophy_level", new
+            )
+        }
+    if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id.endswith("_console"):
+        new = f"{coordinator.data.get('username')}_{coordinator.data.get('platform').get('platform').lower()}_console"
+        return {
+            "new_unique_id": entry.unique_id.replace(
+                "PS5_console", new
+            )
+        }
 
     # No migration needed
     return None
