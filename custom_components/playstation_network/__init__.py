@@ -29,7 +29,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PSN from a config entry."""
 
-    await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
+
 
     try:
         npsso = entry.data.get("npsso")
@@ -52,6 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         PSN_COORDINATOR: coordinator,
         PSN_API: psn,
     }
+    await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
     if entry.unique_id is None:
         hass.config_entries.async_update_entry(entry, unique_id=user.online_id)
     await coordinator.async_config_entry_first_refresh()
