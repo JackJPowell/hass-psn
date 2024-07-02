@@ -82,14 +82,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             }
 
         if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_trophies"):
-            new = f"{coordinator.data.get("username").lower()}_trophy_level"
+            new = f"{coordinator.data.get("username").lower()}_psn_trophy_level"
             return {
                 "new_unique_id": entry.unique_id.replace(
-                    "psn_psn_trophy_level", new
+                    "psn_psn_trophies", new
                 )
             }
-        if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id.endswith("_console"):
-            new = f"{coordinator.data.get('username')}_{coordinator.data.get('platform').get('platform').lower()}_console"
+        if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id is "PS5_console":
+            new = f"{coordinator.data.get('username').lower()}_{coordinator.data.get('platform').get('platform').lower()}_console"
             return {
                 "new_unique_id": entry.unique_id.replace(
                     "PS5_console", new
