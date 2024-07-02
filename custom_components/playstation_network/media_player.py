@@ -77,7 +77,7 @@ class MediaPlayer(PSNEntity, MediaPlayerEntity):
 
     @property
     def unique_id(self):
-        return f"{self.data.get('username')}_{self.data.get('platform').get('platform').lower()}_console"
+        return f"{self.data.get('username').lower()}_{self.data.get('platform').get('platform').lower()}_console"
 
     @property
     def name(self):
