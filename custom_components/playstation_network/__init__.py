@@ -29,8 +29,6 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PSN from a config entry."""
 
-
-
     try:
         npsso = entry.data.get("npsso")
         psn = PSNAWP(npsso)
@@ -73,7 +71,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
         - Migrates old unique ID's from old sensors and media players to the new unique ID's
         """
-        if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_status"):
+        if entry.domain == Platform.SENSOR and entry.unique_id == "psn_psn_status":
             new = f"{coordinator.data.get("username").lower()}_psn_status"
             return {
                 "new_unique_id": entry.unique_id.replace(
@@ -81,7 +79,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 )
             }
 
-        if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_trophies"):
+        if entry.domain == Platform.SENSOR and entry.unique_id == "psn_psn_trophies":
             new = f"{coordinator.data.get("username").lower()}_psn_trophy_level"
             return {
                 "new_unique_id": entry.unique_id.replace(
@@ -99,8 +97,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # No migration needed
         return None
 
-    await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
-    _migrate_device_identifiers(hass, entry.entry_id, coordinator)
+    # Migrate unique ID -- Make the ID actually Unique.
+    # Migrate Device Name -- Make the device name match the psn username
+    # We can remove this logic after a reasonable period of time has passed.
+    if entry.version == 1:
+        await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
+        _migrate_device_identifiers(hass, entry.entry_id, coordinator)
+        hass.config_entries.async_update_entry(entry, version=2)
+
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(update_listener))
     return True
@@ -118,6 +123,9 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update Listener."""
     await hass.config_entries.async_reload(entry.entry_id)
 
+async def async_migrate_entry(hass: HomeAssistant, self):
+    """Migrate Entry Support"""
+    return True
 
 def _migrate_device_identifiers(
     hass: HomeAssistant, entry_id: str, coordinator
