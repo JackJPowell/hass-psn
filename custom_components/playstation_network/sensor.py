@@ -147,7 +147,7 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="trophies",
+        unique_id="psn_trophy_level",
         value_fn=lambda data: data.get("trophy_summary").trophy_level,
         attributes_fn=get_trophy_attr,
     ),
@@ -159,7 +159,7 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         options=["Online", "Offline", "Playing"],
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="status",
+        unique_id="psn_status",
         value_fn=get_status,
         attributes_fn=get_status_attr,
     ),
@@ -169,7 +169,6 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
 async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add sensors for passed config_entry in HA."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id][PSN_COORDINATOR]
-    await coordinator.async_config_entry_first_refresh()
 
     async_add_entities(
         PsnSensor(coordinator, description) for description in PSN_SENSOR
@@ -184,7 +183,7 @@ class PsnSensor(PSNEntity, SensorEntity):
     def __init__(self, coordinator, description: PsnSensorEntityDescription) -> None:
         """Initialize PSN Sensor."""
         super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.data.get("username")}_{description.unique_id}"
+        self._attr_unique_id = f"{coordinator.data.get("username").lower()}_{description.unique_id}"
         self._attr_name = f"{description.name}"
         self.entity_description = description
         self._state = 0
