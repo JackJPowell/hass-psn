@@ -52,13 +52,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         PSN_COORDINATOR: coordinator,
         PSN_API: psn,
     }
-    await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
+
     if entry.unique_id is None:
         hass.config_entries.async_update_entry(entry, unique_id=user.online_id)
     await coordinator.async_config_entry_first_refresh()
-    _migrate_device_identifiers(hass, entry.entry_id, coordinator)
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    entry.async_on_unload(entry.add_update_listener(update_listener))
 
     hass.async_create_task(
         discovery.async_load_platform(
@@ -70,6 +67,42 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
     )
 
+    @callback
+    def async_migrate_entity_entry(entry: er.RegistryEntry) -> dict[str, Any] | None:
+        """Migrate PSN entity entries.
+
+        - Migrates old unique ID's from old sensors and media players to the new unique ID's
+        """
+        if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_status"):
+            new = f"{coordinator.data.get("username").lower()}_psn_status"
+            return {
+                "new_unique_id": entry.unique_id.replace(
+                    "psn_psn_status", new
+                )
+            }
+
+        if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_trophies"):
+            new = f"{coordinator.data.get("username").lower()}_trophy_level"
+            return {
+                "new_unique_id": entry.unique_id.replace(
+                    "psn_psn_trophy_level", new
+                )
+            }
+        if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id.endswith("_console"):
+            new = f"{coordinator.data.get('username')}_{coordinator.data.get('platform').get('platform').lower()}_console"
+            return {
+                "new_unique_id": entry.unique_id.replace(
+                    "PS5_console", new
+                )
+            }
+
+        # No migration needed
+        return None
+
+    await er.async_migrate_entries(hass, entry.entry_id, async_migrate_entity_entry)
+    _migrate_device_identifiers(hass, entry.entry_id, coordinator)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    entry.async_on_unload(entry.add_update_listener(update_listener))
     return True
 
 
@@ -100,37 +133,3 @@ def _migrate_device_identifiers(
                 "migrate identifier '%s' to '%s'", device.identifiers, new_identifier
             )
             dev_reg.async_update_device(device.id, new_identifiers=new_identifier)
-
-
-@callback
-def async_migrate_entity_entry(entry: er.RegistryEntry) -> dict[str, Any] | None:
-    """Migrate PSN entity entries.
-
-    - Migrates old unique ID's from old sensors and media players to the new unique ID's
-    """
-    coordinator = entry.entry_id[PSN_COORDINATOR]
-    if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_status"):
-        new = f"{coordinator.data.get("username").lower()}_psn_status"
-        return {
-            "new_unique_id": entry.unique_id.replace(
-                "psn_psn_status", new
-            )
-        }
-
-    if entry.domain == Platform.SENSOR and entry.unique_id.endswith("psn_psn_trophies"):
-        new = f"{coordinator.data.get("username").lower()}_trophy_level"
-        return {
-            "new_unique_id": entry.unique_id.replace(
-                "psn_psn_trophy_level", new
-            )
-        }
-    if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id.endswith("_console"):
-        new = f"{coordinator.data.get('username')}_{coordinator.data.get('platform').get('platform').lower()}_console"
-        return {
-            "new_unique_id": entry.unique_id.replace(
-                "PS5_console", new
-            )
-        }
-
-    # No migration needed
-    return None
