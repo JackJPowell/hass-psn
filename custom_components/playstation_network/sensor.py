@@ -169,7 +169,6 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
 async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     """Add sensors for passed config_entry in HA."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id][PSN_COORDINATOR]
-    await coordinator.async_config_entry_first_refresh()
 
     async_add_entities(
         PsnSensor(coordinator, description) for description in PSN_SENSOR
