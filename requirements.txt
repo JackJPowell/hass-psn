@@ -3,7 +3,7 @@ homeassistant>=2024.6.4
 home-assistant-frontend
 
 # Integration
-PSNAWP-HA==0.1.0
+PSNAWP-HA==2.0.1
 
 # Development
 black==24.4.2
