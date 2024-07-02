@@ -88,7 +88,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     "psn_psn_trophies", new
                 )
             }
-        if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id is "PS5_console":
+        if entry.domain == Platform.MEDIA_PLAYER and entry.unique_id == "PS5_console":
             new = f"{coordinator.data.get('username').lower()}_{coordinator.data.get('platform').get('platform').lower()}_console"
             return {
                 "new_unique_id": entry.unique_id.replace(
