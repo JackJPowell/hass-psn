@@ -22,7 +22,7 @@ There are two main ways to install this custom component within your Home Assist
     [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JackJPowell&repository=hass-psn&category=Integration)
 
    Or
-   
+
    1. From within Home Assistant, click on the link to **HACS**
    2. Click on **Integrations**
    3. Click on the vertical ellipsis in the top right and select **Custom repositories**
@@ -49,8 +49,10 @@ There is a config flow for this integration. After installing the custom compone
 4. _You will now begin the configuration flow process_
 5. **NPSSO** can be found via the following steps:
    1. Login to your [Playstation](https://playstation.com) account
+     1. Be sure to include your contry code like `/en-us/` or `/en-gb/` on the end of the url
    2. Follow [this link](https://ca.account.sony.com/api/v1/ssocookie) to be presented with your NPSSO code
    3. Only copy the alphanumeric string after "npsso": Do not copy the quotes
+   4. If you are receiving a 429 error, logout of your playstation account and go back to step 1
 
 ## Usage
 
@@ -65,10 +67,10 @@ After the device is configured, the integration will expose 3 entities:
 
 ## Playstation Messages
 
-The integration supports sending playstation network messages using the notify.playstation_network service. Below are two examples:
+The integration supports sending playstation network messages using the notify.playstation_network action. Below are two examples:
 
 ```
-service: notify.playstation_network
+action: notify.playstation_network
 data: {
   message: "Hey buddy, want to play some overwatch? ",
   target: user1
@@ -76,7 +78,7 @@ data: {
 ```
 
 ```
-service: notify.playstation_network
+action: notify.playstation_network
 data: {
   message: "Hey guys, want to play some destiny?",
   target: ["user1","user2"]
