@@ -26,13 +26,13 @@ class PsnSensorEntityDescription(SensorEntityDescription):
     description: str = ""
 
 
-def get_status(coordinator_data: any) -> dict[str, str]:
+def get_status(coordinator_data: any) -> str:
     """Returns online status"""
-    match coordinator_data.get("platform").get("onlineStatus"):
+    match coordinator_data.get("platform", {}).get("onlineStatus", "offline"):
         case "online":
             if (
                 coordinator_data.get("available") is True
-                and coordinator_data.get("title_metadata").get("npTitleId") is not None
+                and coordinator_data.get("title_metadata", {}).get("npTitleId")
             ):
                 return "Playing"
             else:
@@ -45,114 +45,62 @@ def get_status(coordinator_data: any) -> dict[str, str]:
 
 def get_status_attr(coordinator_data: any) -> dict[str, str]:
     """Parses status attributes"""
-    if coordinator_data.get("title_metadata").get("npTitleId") is not None:
-        attrs: dict[str, str] = {
-            "name": "",
-            "description": "",
-            "platform": "",
-            "content_rating": "",
-            "play_count": "",
-            "play_duration": "",
-            "star_rating": "",
-            "trophies": {
-                "platinum": 0,
-                "gold": 0,
-                "silver": 0,
-                "bronze": 0,
-            },
-            "earned_trophies": {
-                "platinum": 0,
-                "gold": 0,
-                "silver": 0,
-                "bronze": 0,
-            },
-            "trophy_progress": 0,
-        }
+    attrs = {
+        "name": "",
+        "description": "",
+        "platform": "",
+        "content_rating": "",
+        "play_count": 0,
+        "play_duration": "0h 0m",
+        "star_rating": 0,
+        "trophies_platinum": 0,
+        "trophies_gold": 0,
+        "trophies_silver": 0,
+        "trophies_bronze": 0,
+        "earned_trophies_platinum": 0,
+        "earned_trophies_gold": 0,
+        "earned_trophies_silver": 0,
+        "earned_trophies_bronze": 0,
+        "trophy_progress": 0,
+    }
 
-        title = coordinator_data.get("title_details")[0]
-        title_trophies = coordinator_data.get("title_trophies")
+    if coordinator_data.get("title_metadata", {}).get("npTitleId"):
+        title = coordinator_data.get("title_details", [{}])[0]
+        title_trophies = coordinator_data.get("title_trophies", {})
 
-        attrs["name"] = title.get("name")
-        attrs["description"] = title.get("descriptions")[0].get("desc")
+        attrs["name"] = title.get("name", "")
+        attrs["description"] = title.get("descriptions", [{}])[0].get("desc", "")
         attrs["platform"] = (
-            coordinator_data.get("presence")
-            .get("basicPresence")
-            .get("gameTitleInfoList")[0]
-            .get("format")
+            coordinator_data.get("presence", {})
+            .get("basicPresence", {})
+            .get("gameTitleInfoList", [{}])[0]
+            .get("format", "")
         )
-        attrs["content_rating"] = title.get("contentRating").get("description")
-        attrs["star_rating"] = title.get("starRating").get("score")
-        attrs["trophies"] = title_trophies.defined_trophies
-        attrs["earned_trophies"] = title_trophies.earned_trophies
-        attrs["trophy_progress"] = title_trophies.progress
+        attrs["content_rating"] = title.get("contentRating", {}).get("description", "")
+        attrs["star_rating"] = title.get("starRating", {}).get("score", 0)
+        attrs["trophies_platinum"] = title_trophies.get("platinum", 0)
+        attrs["trophies_gold"] = title_trophies.get("gold", 0)
+        attrs["trophies_silver"] = title_trophies.get("silver", 0)
+        attrs["trophies_bronze"] = title_trophies.get("bronze", 0)
+        attrs["trophy_progress"] = title_trophies.get("progress", 0)
 
-        for t in coordinator_data["recent_titles"]:
-            if t.title_id == coordinator_data.get("title_metadata").get("npTitleId"):
-                title_stats = t
-                break
-
-        attrs["play_count"] = title_stats.play_count
-        attrs["play_duration"] = convert_time(duration=title_stats.play_duration)
-    else:
-        attrs = {}
     return attrs
 
 
 def convert_time(duration: datetime) -> str:
+    """Convert time duration to a formatted string."""
     minutes, seconds = divmod(duration.seconds, 60)
     hours, minutes = divmod(minutes, 60)
     if duration.days > 1:
         return f"{duration.days} Days {hours}h"
-    if duration.days == 1:
+    elif duration.days == 1:
         return f"{duration.days} Day {hours}h"
-    if duration.days == 0:
+    else:
         return f"{hours}h {minutes}m"
 
 
-def get_trophy_attr(coordinator_data: any) -> dict[str, str]:
-    """Create the attributes for earned trophies."""
-    attrs: dict[str, str] = {
-        "platinum": 0,
-        "gold": 0,
-        "silver": 0,
-        "bronze": 0,
-        "next_level_progress": 0,
-    }
-    earned_trophies = coordinator_data.get("trophy_summary").earned_trophies
-
-    attrs["platinum"] = earned_trophies.platinum
-    attrs["gold"] = earned_trophies.gold
-    attrs["silver"] = earned_trophies.silver
-    attrs["bronze"] = earned_trophies.bronze
-    attrs["next_level_progress"] = coordinator_data.get("trophy_summary").progress
-    return attrs
-
-
-PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
-    # PsnSensorEntityDescription(
-    #     key="friends",
-    #     native_unit_of_measurement="friends",
-    #     suggested_unit_of_measurement="friends",
-    #     description="Your Online PSN Friends",
-    #     name="Friends Online",
-    #     icon="mdi:account-group",
-    #     entity_registry_enabled_default=True,
-    #     has_entity_name=False,
-    #     unique_id="friends_online",
-    #     value_fn=lambda data: len(data.get("friends")),
-    #     attributes_fn=lambda data: {},
-    # ),
-    PsnSensorEntityDescription(
-        key="trophy_summary",
-        native_unit_of_measurement="Trophy Level",
-        name="Trophy Level",
-        icon="mdi:trophy",
-        entity_registry_enabled_default=True,
-        has_entity_name=True,
-        unique_id="psn_trophy_level",
-        value_fn=lambda data: data.get("trophy_summary").trophy_level,
-        attributes_fn=get_trophy_attr,
-    ),
+# Dynamically add individual sensors for each attribute
+PSN_SENSOR = [
     PsnSensorEntityDescription(
         key="status",
         device_class=SensorDeviceClass.ENUM,
@@ -164,8 +112,19 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         unique_id="psn_status",
         value_fn=get_status,
         attributes_fn=get_status_attr,
-    ),
-)
+    )
+]
+
+for attr_key, attr_name in get_status_attr({}).items():
+    PSN_SENSOR.append(
+        PsnSensorEntityDescription(
+            key=attr_key,
+            name=attr_key.replace("_", " ").capitalize(),
+            icon="mdi:information-outline",
+            unique_id=f"psn_{attr_key}",
+            value_fn=lambda data, key=attr_key: get_status_attr(data).get(key, ""),
+        )
+    )
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
@@ -180,36 +139,19 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
 class PsnSensor(PSNEntity, SensorEntity):
     """PSN Sensor Class."""
 
-    entity_description = PSN_SENSOR
-
     def __init__(self, coordinator, description: PsnSensorEntityDescription) -> None:
         """Initialize PSN Sensor."""
         super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.data.get("username").lower()}_{description.unique_id}"
-        self._attr_name = f"{description.name}"
         self.entity_description = description
-        self._state = 0
+        self._attr_unique_id = f"{coordinator.data.get('username', '').lower()}_{description.unique_id}"
+        self._attr_name = description.name
 
     @property
-    def available(self) -> bool:
-        """Return if available."""
-        return True
+    def native_value(self) -> StateType:
+        """Return the value of the sensor."""
+        return self.entity_description.value_fn(self.coordinator.data)
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-
-        self._attr_native_value = self.entity_description.value_fn(
-            self.coordinator.data
-        )
         self.async_write_ha_state()
-
-    @property
-    def native_value(self) -> StateType:
-        """Return native value for entity."""
-        return self.entity_description.value_fn(self.coordinator.data)
-
-    @property
-    def extra_state_attributes(self) -> dict[str, str]:
-        """Return the state attributes of the entity."""
-        return self.entity_description.attributes_fn(self.coordinator.data)
