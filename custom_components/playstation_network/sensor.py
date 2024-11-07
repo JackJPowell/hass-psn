@@ -53,23 +53,25 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         "description": "",
         "platform": "",
         "content_rating": "",
-        "play_count": 0,
-        "play_duration": "0h 0m",
-        "star_rating": 0,
+        "play_count": "",
+        "play_duration": "",
+        "star_rating": "",
         "trophies": {
-            "platinum": 0,
-            "gold": 0,
-            "silver": 0,
-            "bronze": 0,
+            "platinum": "",
+            "gold": "",
+            "silver": "",
+            "bronze": "",
         },
         "earned_trophies": {
-            "platinum": 0,
-            "gold": 0,
-            "silver": 0,
-            "bronze": 0,
+            "platinum": "",
+            "gold": "",
+            "silver": "",
+            "bronze": "",
         },
         "trophy_progress": 0,
     }
+
+    attrs["next_level_progress"] = coordinator_data.get("trophy_summary").progress
 
     if coordinator_data.get("title_metadata", {}).get("npTitleId"):
         title = coordinator_data.get("title_details", [{}])[0]
@@ -91,7 +93,6 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         attrs["earned_trophies"] = title_trophies.earned_trophies
         attrs["trophy_progress"] = title_trophies.progress
 
-        attrs["next_level_progress"] = coordinator_data.get("trophy_summary").progress
         for t in coordinator_data["recent_titles"]:
             if t.title_id == coordinator_data.get("title_metadata").get("npTitleId"):
                 title_stats = t
@@ -398,7 +399,6 @@ class PsnAttributeSensor(PSNEntity, SensorEntity):
         )
         self._attr_name = description.name
         self.entity_description = description
-        self.attributes = get_status_attr(self.coordinator.data)
 
     @property
     def available(self) -> bool:
@@ -413,4 +413,5 @@ class PsnAttributeSensor(PSNEntity, SensorEntity):
     @property
     def native_value(self) -> StateType:
         """Return native value for entity."""
-        return self.entity_description.value_fn(self.attributes)
+        attributes = get_status_attr(self.coordinator.data)
+        return self.entity_description.value_fn(attributes)
