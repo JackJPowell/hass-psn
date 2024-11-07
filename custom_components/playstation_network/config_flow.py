@@ -7,7 +7,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import CONF_USERNAME
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
 from homeassistant.exceptions import (
     ConfigEntryAuthFailed,
@@ -17,7 +17,7 @@ from homeassistant.exceptions import (
 from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
 from psnawp_api.psnawp import PSNAWP
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES
 from .coordinator import PsnCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,6 +74,14 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
     # def async_get_options_flow(config_entry: ConfigEntry) -> PlaystationNetworkOptionsFlowHandler:
     #     """Get the options flow for this handler."""
     #     return PlaystationNetworkOptionsFlowHandler(config_entry)
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: ConfigEntry,
+    ):
+        """Get the options flow for this handler."""
+        return PlaystationNetworkOptionsFlowHandler(config_entry)
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -175,6 +183,44 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
         self._abort_if_unique_id_configured(
             updates={CONF_USERNAME: unique_id},
         )
+
+
+class PlaystationNetworkOptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle Playstation Network options."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        self.config_entry = config_entry
+        self.options = dict(config_entry.options)
+
+    async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
+        """Manage the options."""
+        return await self.async_step_entities()
+
+    async def async_step_entities(self, user_input=None):
+        """Handle options initialized by the user."""
+        if user_input is not None:
+            self.options.update(user_input)
+            return await self._update_options()
+
+        return self.async_show_form(
+            step_id="entities",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(
+                        CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES,
+                        default=self.config_entry.options.get(
+                            CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES, False
+                        ),
+                    ): bool,
+                }
+            ),
+            last_step=True,
+        )
+
+    async def _update_options(self):
+        """Update config entry options."""
+        return self.async_create_entry(title="", data=self.options)
 
 
 class CannotConnect(HomeAssistantError):
