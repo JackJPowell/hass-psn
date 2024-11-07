@@ -23,5 +23,15 @@
         "title": "Mit neuem NPSSO-Code erneut authentifizieren"
       }
     }
+  },
+  "options": {
+    "step": {
+      "entities": {
+        "title": "Playstation Network Optionen",
+        "data": {
+          "attributes_as_entities": "Zusätzliche attribute als entitäten erstellen"
+        }
+      }
+    }
   }
 }
