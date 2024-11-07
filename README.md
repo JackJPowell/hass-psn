@@ -66,6 +66,10 @@ After the device is configured, the integration will expose 3 entities:
 - Media Player
   - When playing a game the media player entity will be populated with game details such as the title and cover art
 
+## Options
+
+There is now an option to configure the playstation network integration so it will create all additional state attributes as top level sensor entities. If you had trouble referencing the state attributes on the sensors, toggle this option on.
+
 ## Playstation Messages
 
 The integration supports sending playstation network messages using the notify.playstation_network action. Below are two examples:
