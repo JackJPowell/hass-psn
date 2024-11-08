@@ -2,6 +2,7 @@
 
 import logging
 from typing import Any
+import re
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -14,6 +15,7 @@ from homeassistant.exceptions import (
     ConfigEntryNotReady,
     HomeAssistantError,
 )
+from homeassistant.helpers import entity_registry as er, device_registry as dr
 from psnawp_api.core.psnawp_exceptions import PSNAWPAuthenticationError
 from psnawp_api.psnawp import PSNAWP
 
@@ -220,7 +222,54 @@ class PlaystationNetworkOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def _update_options(self):
         """Update config entry options."""
+        if self.options.get(CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES) is False:
+            self._remove_unused_entities()
+
         return self.async_create_entry(title="", data=self.options)
+
+    def _remove_unused_entities(self):
+        try:
+            entities_to_remove = []
+            device = None
+            if self.options.get(CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES) is False:
+                entity_registry = er.async_get(self.hass)
+                dev_reg = dr.async_get(self.hass)
+                devices: list[dr.DeviceEntry] = dr.async_entries_for_config_entry(
+                    dev_reg, self.config_entry.entry_id
+                )
+                for device in devices:
+                    if device.name.lower() == self.config_entry.unique_id.lower():
+                        continue
+
+                if device is not None:
+                    entity_entries = er.async_entries_for_device(
+                        er.async_get(self.hass),
+                        device.id,
+                        include_disabled_entities=True,
+                    )
+
+                    for entity in entity_entries:
+                        try:
+                            if re.search("_attr$", entity.unique_id):
+                                entities_to_remove.append(
+                                    entity_registry.async_get_entity_id(
+                                        "sensor", DOMAIN, entity.unique_id
+                                    )
+                                )
+                        except Exception as ex:
+                            _LOGGER.debug(
+                                "Unexpected item when looping over entities %s", ex
+                            )
+                    for entity_id in entities_to_remove:
+                        _LOGGER.debug("Removing entity: %s", entity_id)
+                        entity_registry.async_remove(entity_id)
+                else:
+                    _LOGGER.debug(
+                        "Unable to find device matching name: %s",
+                        self.config_entry.unique_id,
+                    )
+        except Exception as ex:
+            _LOGGER.debug("Unexpected issue when removing entities: %s", ex)
 
 
 class CannotConnect(HomeAssistantError):
