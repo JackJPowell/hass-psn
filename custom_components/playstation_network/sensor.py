@@ -29,7 +29,7 @@ class PsnSensorEntityDescription(SensorEntityDescription):
     description: str = ""
 
 
-def get_status(coordinator_data: any) -> dict[str, str]:
+def get_status(coordinator_data: any) -> str:
     """Returns online status"""
     match coordinator_data.get("platform").get("onlineStatus"):
         case "online":
