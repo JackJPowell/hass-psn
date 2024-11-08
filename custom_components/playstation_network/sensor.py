@@ -49,26 +49,26 @@ def get_status(coordinator_data: any) -> str:
 def get_status_attr(coordinator_data: any) -> dict[str, str]:
     """Parses status attributes"""
     attrs: dict[str, str] = {
-        "name": "",
-        "description": "",
-        "platform": "",
-        "content_rating": "",
-        "play_count": "",
-        "play_duration": "",
-        "star_rating": "",
+        "name": None,
+        "description": None,
+        "platform": None,
+        "content_rating": None,
+        "play_count": None,
+        "play_duration": None,
+        "star_rating": None,
         "trophies": {
-            "platinum": "",
-            "gold": "",
-            "silver": "",
-            "bronze": "",
+            "platinum": None,
+            "gold": None,
+            "silver": None,
+            "bronze": None,
         },
         "earned_trophies": {
-            "platinum": "",
-            "gold": "",
-            "silver": "",
-            "bronze": "",
+            "platinum": None,
+            "gold": None,
+            "silver": None,
+            "bronze": None,
         },
-        "trophy_progress": 0,
+        "trophy_progress": None,
     }
 
     attrs["next_level_progress"] = coordinator_data.get("trophy_summary").progress
@@ -169,7 +169,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:gamepad-outline",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_title_name",
+        unique_id="psn_title_name_attr",
         value_fn=lambda data: data.get("name"),
     ),
     PsnSensorEntityDescription(
@@ -179,7 +179,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:sony-playstation",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_platform",
+        unique_id="psn_platform_attr",
         value_fn=lambda data: data.get("platform"),
     ),
     PsnSensorEntityDescription(
@@ -189,7 +189,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:card-text-outline",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_title_description",
+        unique_id="psn_title_description_attr",
         value_fn=lambda data: data.get("description"),
     ),
     PsnSensorEntityDescription(
@@ -199,7 +199,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:check-decagram",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_content_rating",
+        unique_id="psn_content_rating_attr",
         value_fn=lambda data: data.get("content_rating"),
     ),
     PsnSensorEntityDescription(
@@ -209,7 +209,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:star",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_star_rating",
+        unique_id="psn_star_rating_attr",
         value_fn=lambda data: data.get("star_rating"),
     ),
     PsnSensorEntityDescription(
@@ -219,7 +219,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:counter",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_play_count",
+        unique_id="psn_play_count_attr",
         value_fn=lambda data: data.get("play_count"),
     ),
     PsnSensorEntityDescription(
@@ -229,7 +229,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:clock-time-four-outline",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_play_duration",
+        unique_id="psn_play_duration_attr",
         value_fn=lambda data: data.get("play_duration"),
     ),
     PsnSensorEntityDescription(
@@ -239,7 +239,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy-outline",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_title_progress",
+        unique_id="psn_trophy_title_progress_attr",
         value_fn=lambda data: data.get("trophy_progress"),
     ),
     PsnSensorEntityDescription(
@@ -249,7 +249,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_next_level_progress",
+        unique_id="psn_trophy_next_level_progress_attr",
         value_fn=lambda data: data.get("next_level_progress"),
     ),
     PsnSensorEntityDescription(
@@ -259,7 +259,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_platinum_total",
+        unique_id="psn_trophy_platinum_total_attr",
         value_fn=lambda data: data.get("trophies").get("platinum"),
     ),
     PsnSensorEntityDescription(
@@ -269,7 +269,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_gold_total",
+        unique_id="psn_trophy_gold_total_attr",
         value_fn=lambda data: data.get("trophies").get("gold"),
     ),
     PsnSensorEntityDescription(
@@ -279,7 +279,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_silver_total",
+        unique_id="psn_trophy_silver_total_attr",
         value_fn=lambda data: data.get("trophies").get("silver"),
     ),
     PsnSensorEntityDescription(
@@ -289,7 +289,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_bronze_total",
+        unique_id="psn_trophy_bronze_total_attr",
         value_fn=lambda data: data.get("trophies").get("bronze"),
     ),
     PsnSensorEntityDescription(
@@ -299,7 +299,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy-variant",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_platinum_earned",
+        unique_id="psn_trophy_platinum_earned_attr",
         value_fn=lambda data: data.get("earned_trophies").get("bronze"),
     ),
     PsnSensorEntityDescription(
@@ -309,7 +309,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy-variant",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_gold_earned",
+        unique_id="psn_trophy_gold_earned_attr",
         value_fn=lambda data: data.get("earned_trophies").get("bronze"),
     ),
     PsnSensorEntityDescription(
@@ -319,7 +319,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy-variant",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_silver_earned",
+        unique_id="psn_trophy_silver_earned_attr",
         value_fn=lambda data: data.get("earned_trophies").get("bronze"),
     ),
     PsnSensorEntityDescription(
@@ -329,7 +329,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         icon="mdi:trophy-variant",
         entity_registry_enabled_default=True,
         has_entity_name=True,
-        unique_id="psn_trophy_bronze_earned",
+        unique_id="psn_trophy_bronze_earned_attr",
         value_fn=lambda data: data.get("earned_trophies").get("bronze"),
     ),
 )
@@ -343,7 +343,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
         PsnSensor(coordinator, description) for description in PSN_SENSOR
     )
 
-    if config_entry.options.get(CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES, True):
+    if config_entry.options.get(CONF_EXPOSE_ATTRIBUTES_AS_ENTITIES) is True:
         async_add_entities(
             PsnAttributeSensor(coordinator, description)
             for description in PSN_ADDITIONAL_SENSOR
@@ -363,7 +363,6 @@ class PsnSensor(PSNEntity, SensorEntity):
         )
         self._attr_name = description.name
         self.entity_description = description
-        self.attributes = get_status_attr(self.coordinator.data)
 
     @property
     def available(self) -> bool:
@@ -383,7 +382,8 @@ class PsnSensor(PSNEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, str]:
         """Return the state attributes of the entity."""
-        return self.entity_description.attributes_fn(self.coordinator.data)
+        if self.coordinator.data.get("title_metadata").get("npTitleId") is not None:
+            return self.entity_description.attributes_fn(self.coordinator.data)
 
 
 class PsnAttributeSensor(PSNEntity, SensorEntity):
