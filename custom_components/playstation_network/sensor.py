@@ -300,7 +300,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         entity_registry_enabled_default=True,
         has_entity_name=True,
         unique_id="psn_trophy_platinum_earned_attr",
-        value_fn=lambda data: data.get("earned_trophies").get("bronze"),
+        value_fn=lambda data: data.get("earned_trophies").get("platinum"),
     ),
     PsnSensorEntityDescription(
         key="trophy_gold_earned",
@@ -310,7 +310,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         entity_registry_enabled_default=True,
         has_entity_name=True,
         unique_id="psn_trophy_gold_earned_attr",
-        value_fn=lambda data: data.get("earned_trophies").get("bronze"),
+        value_fn=lambda data: data.get("earned_trophies").get("gold"),
     ),
     PsnSensorEntityDescription(
         key="trophy_silver_earned",
@@ -320,7 +320,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         entity_registry_enabled_default=True,
         has_entity_name=True,
         unique_id="psn_trophy_silver_earned_attr",
-        value_fn=lambda data: data.get("earned_trophies").get("bronze"),
+        value_fn=lambda data: data.get("earned_trophies").get("silver"),
     ),
     PsnSensorEntityDescription(
         key="trophy_bronze_earned",

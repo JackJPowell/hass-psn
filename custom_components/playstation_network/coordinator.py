@@ -62,9 +62,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 == "availableToPlay"
             )
             self.data["platform"] = (
-                self.data["presence"]
-                .get("basicPresence")
-                .get("primaryPlatformInfo")
+                self.data["presence"].get("basicPresence").get("primaryPlatformInfo")
             )
             try:
                 self.data["title_metadata"] = (
@@ -76,9 +74,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self.data["title_metadata"] = {}
 
             # self.data["friends"] = await self.client.available_to_play()
-            self.data[
-                "trophy_summary"
-            ] = await self.hass.async_add_executor_job(
+            self.data["trophy_summary"] = await self.hass.async_add_executor_job(
                 lambda: self.client.trophy_summary()
             )
 
@@ -90,11 +86,17 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 title = await self.hass.async_add_executor_job(
                     lambda: self.api.game_title(title_id, "me")
                 )
-                self.data[
-                    "title_details"
-                ] = await self.hass.async_add_executor_job(
-                    lambda: title.get_details()
+                ## Attempt to pull details with user's country and language code
+                self.data["title_details"] = await self.hass.async_add_executor_job(
+                    lambda: title.get_details(
+                        self.hass.config.country, self.hass.config.language
+                    )
                 )
+                ## If we receive an error, fall back to english
+                if self.data["title_details"][0].get("errorCode") is not None:
+                    self.data["title_details"] = await self.hass.async_add_executor_job(
+                        lambda: title.get_details()
+                    )
 
                 trophy_titles = await self.hass.async_add_executor_job(
                     lambda: self.client.trophy_titles_for_title(
