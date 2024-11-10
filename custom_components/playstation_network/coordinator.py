@@ -48,6 +48,8 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "title_stats": {},
             "username": "",
             "recent_titles": [],
+            "country": "",
+            "language": "",
         }
 
     async def _async_update_data(self) -> dict[str, Any]:
@@ -77,6 +79,9 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self.data["trophy_summary"] = await self.hass.async_add_executor_job(
                 lambda: self.client.trophy_summary()
             )
+
+            self.data["country"] = self.hass.config.country
+            self.data["language"] = self.hass.config.language
 
             if (
                 self.data["available"] is True
