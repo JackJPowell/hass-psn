@@ -46,6 +46,13 @@ def get_status(coordinator_data: any) -> str:
             return "Offline"
 
 
+def get_avatar(data: any) -> str:
+    """Return Avatar URL"""
+    for avatar in data.get("profile").get("avatars"):
+        if avatar.get("size") == "l":
+            return avatar.get("url")
+
+
 def get_status_attr(coordinator_data: any) -> dict[str, str]:
     """Parses status attributes"""
     attrs: dict[str, str] = {
@@ -56,6 +63,9 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         "play_count": None,
         "play_duration": None,
         "star_rating": None,
+        "about_me": None,
+        "avatar": None,
+        "playstation_plus": None,
         "trophies": {
             "platinum": None,
             "gold": None,
@@ -92,6 +102,11 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         attrs["trophies"] = title_trophies.defined_trophies
         attrs["earned_trophies"] = title_trophies.earned_trophies
         attrs["trophy_progress"] = title_trophies.progress
+
+        attrs["about_me"] = coordinator_data.get("profile").get("aboutMe")
+        attrs["playstation_plus"] = coordinator_data.get("profile").get("isPlus")
+
+        attrs["avatar"] = get_avatar(coordinator_data)
 
         for t in coordinator_data["recent_titles"]:
             if t.title_id == coordinator_data.get("title_metadata").get("npTitleId"):
@@ -171,6 +186,36 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         has_entity_name=True,
         unique_id="psn_title_name_attr",
         value_fn=lambda data: data.get("name"),
+    ),
+    PsnSensorEntityDescription(
+        key="about_me",
+        native_unit_of_measurement=None,
+        name="About Me",
+        icon="mdi:information-outline",
+        entity_registry_enabled_default=True,
+        has_entity_name=True,
+        unique_id="psn_about_me_attr",
+        value_fn=lambda data: data.get("profile").get("aboutMe"),
+    ),
+    PsnSensorEntityDescription(
+        key="has_playstation_plus",
+        native_unit_of_measurement=None,
+        name="Playstation Plus",
+        icon="mdi:gamepad-outline",
+        entity_registry_enabled_default=True,
+        has_entity_name=True,
+        unique_id="psn_playstation_plus_attr",
+        value_fn=lambda data: data.get("profile").get("isPlus"),
+    ),
+    PsnSensorEntityDescription(
+        key="avatar",
+        native_unit_of_measurement=None,
+        name="Avatar",
+        icon="mdi:face-man-profile",
+        entity_registry_enabled_default=True,
+        has_entity_name=True,
+        unique_id="psn_avatar_attr",
+        value_fn=get_avatar,
     ),
     PsnSensorEntityDescription(
         key="platform",

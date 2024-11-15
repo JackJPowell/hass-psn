@@ -39,6 +39,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "presence": {},
             "available": False,
             "online_status": False,
+            "profile": {},
             "platform": {},
             "title_metadata": {},
             "friends": [],
@@ -56,8 +57,11 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Get the latest data from the PSN."""
         try:
             self.data["username"] = self.user.online_id
+            self.data["profile"] = await self.hass.async_add_executor_job(
+                self.user.profile
+            )
             self.data["presence"] = await self.hass.async_add_executor_job(
-                lambda: self.user.get_presence()
+                self.user.get_presence
             )
             self.data["available"] = (
                 self.data["presence"].get("basicPresence").get("availability")
@@ -77,7 +81,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             # self.data["friends"] = await self.client.available_to_play()
             self.data["trophy_summary"] = await self.hass.async_add_executor_job(
-                lambda: self.client.trophy_summary()
+                self.client.trophy_summary
             )
 
             self.data["country"] = self.hass.config.country
@@ -100,7 +104,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 ## If we receive an error, fall back to english
                 if self.data["title_details"][0].get("errorCode") is not None:
                     self.data["title_details"] = await self.hass.async_add_executor_job(
-                        lambda: title.get_details()
+                        title.get_details
                     )
 
                 trophy_titles = await self.hass.async_add_executor_job(
