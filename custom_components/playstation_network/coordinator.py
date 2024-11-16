@@ -58,7 +58,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             self.data["username"] = self.user.online_id
             self.data["profile"] = await self.hass.async_add_executor_job(
-                self.user.profile
+                lambda: self.user.profile()
             )
             self.data["presence"] = await self.hass.async_add_executor_job(
                 self.user.get_presence
