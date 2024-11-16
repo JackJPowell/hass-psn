@@ -46,13 +46,6 @@ def get_status(coordinator_data: any) -> str:
             return "Offline"
 
 
-def get_avatar(data: any) -> str:
-    """Return Avatar URL"""
-    for avatar in data.get("profile").get("avatars"):
-        if avatar.get("size") == "l":
-            return avatar.get("url")
-
-
 def get_status_attr(coordinator_data: any) -> dict[str, str]:
     """Parses status attributes"""
     attrs: dict[str, str] = {
@@ -64,8 +57,6 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         "play_duration": None,
         "star_rating": None,
         "about_me": None,
-        "avatar": None,
-        "playstation_plus": None,
         "trophies": {
             "platinum": None,
             "gold": None,
@@ -82,15 +73,23 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
     }
 
     attrs["next_level_progress"] = coordinator_data.get("trophy_summary").progress
+    attrs["about_me"] = coordinator_data.get("profile").get("aboutMe")
 
     if coordinator_data.get("title_metadata", {}).get("npTitleId"):
         title = coordinator_data.get("title_details", [{}])[0]
         title_trophies = coordinator_data.get("title_trophies", {})
 
         attrs["name"] = title.get("name", "").title()
-        attrs["description"] = (
-            title.get("descriptions", [""])[0].get("desc", "").title()
-        )
+
+        description = ""
+        for desc in title.get("descriptions", [""]):
+            if desc.get("type") == "SHORT":
+                description = desc.get("desc", "").title()
+
+        if len(description) >= 252:
+            description = f"{description[0:252]}..."
+        attrs["description"] = description
+
         attrs["platform"] = (
             coordinator_data.get("presence", {})
             .get("basicPresence", {})
@@ -102,11 +101,6 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         attrs["trophies"] = title_trophies.defined_trophies
         attrs["earned_trophies"] = title_trophies.earned_trophies
         attrs["trophy_progress"] = title_trophies.progress
-
-        attrs["about_me"] = coordinator_data.get("profile").get("aboutMe")
-        attrs["playstation_plus"] = coordinator_data.get("profile").get("isPlus")
-
-        attrs["avatar"] = get_avatar(coordinator_data)
 
         for t in coordinator_data["recent_titles"]:
             if t.title_id == coordinator_data.get("title_metadata").get("npTitleId"):
@@ -195,27 +189,7 @@ PSN_ADDITIONAL_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         entity_registry_enabled_default=True,
         has_entity_name=True,
         unique_id="psn_about_me_attr",
-        value_fn=lambda data: data.get("profile").get("aboutMe"),
-    ),
-    PsnSensorEntityDescription(
-        key="has_playstation_plus",
-        native_unit_of_measurement=None,
-        name="Playstation Plus",
-        icon="mdi:gamepad-outline",
-        entity_registry_enabled_default=True,
-        has_entity_name=True,
-        unique_id="psn_playstation_plus_attr",
-        value_fn=lambda data: data.get("profile").get("isPlus"),
-    ),
-    PsnSensorEntityDescription(
-        key="avatar",
-        native_unit_of_measurement=None,
-        name="Avatar",
-        icon="mdi:face-man-profile",
-        entity_registry_enabled_default=True,
-        has_entity_name=True,
-        unique_id="psn_avatar_attr",
-        value_fn=get_avatar,
+        value_fn=lambda data: data.get("about_me"),
     ),
     PsnSensorEntityDescription(
         key="platform",
