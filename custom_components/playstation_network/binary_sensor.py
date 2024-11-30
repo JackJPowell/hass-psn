@@ -1,6 +1,9 @@
 """Binary sensor platform for Unfolded Circle."""
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import (
+    BinarySensorEntity,
+    BinarySensorDeviceClass,
+)
 from homeassistant.core import HomeAssistant, callback
 
 from .const import DOMAIN, PSN_COORDINATOR
@@ -32,6 +35,7 @@ class PlaystationPlusBinarySensor(PSNEntity, BinarySensorEntity):
         self._attr_name = "Playstation Plus"
         self._attr_native_value = self.coordinator.data.get("profile").get("isPlus")
         self._attr_icon = "mdi:gamepad-outline"
+        self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
 
     @property
     def is_on(self):
