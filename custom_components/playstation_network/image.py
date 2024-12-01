@@ -30,7 +30,7 @@ class PlaystationProfileImage(PSNEntity, ImageEntity):
 
         ImageEntity.__init__(self, coordinator.hass)
         self._attr_has_entity_name = True
-        self._attr_name = "Playstation Avatar"
+        self._attr_name = "Avatar"
         self._attr_icon = "mdi:face-man-profile"
         self._attr_image_url = self.get_avatar()
         self._attr_image_last_updated = dt_util.utcnow()

@@ -29,6 +29,12 @@ class PsnSensorEntityDescription(SensorEntityDescription):
     description: str = ""
 
 
+def get_ps_plus_status(coordinator_data: any) -> str:
+    if coordinator_data.get("profile", {}).get("isPlus"):
+        return "Active"
+    return "Inactive"
+
+
 def get_status(coordinator_data: any) -> str:
     """Returns online status"""
     match coordinator_data.get("platform").get("onlineStatus"):
@@ -167,6 +173,17 @@ PSN_SENSOR: tuple[PsnSensorEntityDescription, ...] = (
         unique_id="psn_status",
         value_fn=get_status,
         attributes_fn=get_status_attr,
+    ),
+    PsnSensorEntityDescription(
+        key="has_playstation_plus",
+        device_class=SensorDeviceClass.ENUM,
+        name="Playstation Plus",
+        icon="mdi:gamepad-outline",
+        options=["Active", "Inactive"],
+        entity_registry_enabled_default=True,
+        has_entity_name=True,
+        unique_id="has_playstation_plus",
+        value_fn=get_ps_plus_status,
     ),
 )
 

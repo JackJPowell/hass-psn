@@ -6,7 +6,7 @@
   "dependencies": ["network"],
   "documentation": "https://github.com/JackJPowell/hass-psn",
   "homekit": {},
-  "integration_type": "device",
+  "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/JackJPowell/hass-psn/issues",
   "requirements": ["PSNAWP-HA==2.2.2"],

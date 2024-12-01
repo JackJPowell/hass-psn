@@ -21,7 +21,7 @@ from .coordinator import PsnCoordinator
 PLATFORMS: list[Platform] = [
     Platform.MEDIA_PLAYER,
     Platform.SENSOR,
-    Platform.BINARY_SENSOR,
+    # Platform.BINARY_SENSOR,
     Platform.IMAGE,
 ]
 
