@@ -420,6 +420,8 @@ class PsnSensor(PSNEntity, SensorEntity):
         """Return the state attributes of the entity."""
         if self.coordinator.data.get("title_metadata").get("npTitleId") is not None:
             return self.entity_description.attributes_fn(self.coordinator.data)
+        if self.entity_description.key == "trophy_summary":
+            return self.entity_description.attributes_fn(self.coordinator.data)
 
 
 class PsnAttributeSensor(PSNEntity, SensorEntity):
