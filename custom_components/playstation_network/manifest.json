@@ -11,5 +11,5 @@
   "issue_tracker": "https://github.com/JackJPowell/hass-psn/issues",
   "requirements": ["PSNAWP-HA==2.2.2"],
   "ssdp": [],
-  "version": "0.7.0"
+  "version": "0.7.1"
 }
