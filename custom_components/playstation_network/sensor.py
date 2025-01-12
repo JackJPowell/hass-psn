@@ -114,10 +114,12 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
                 break
 
         attrs["play_count"] = title_stats.play_count
-        
-        formatted_duration, hours_duration = convert_time(duration=title_stats.play_duration)
+
+        formatted_duration, hours_duration = convert_time(
+            duration=title_stats.play_duration
+        )
         attrs["play_duration"] = formatted_duration
-        attrs["play_duration_hrs"] = hours_duration
+        attrs["play_duration_hours"] = hours_duration
 
     return attrs
 
@@ -125,11 +127,11 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
 def convert_time(duration: datetime) -> tuple[str, str]:
     minutes, seconds = divmod(duration.seconds, 60)
     hours, minutes = divmod(minutes, 60)
-    
+
     """Calculate total hours including days"""
     total_hours = duration.days * 24 + hours
     total_minutes = minutes
-    
+
     """Original formatted string"""
     if duration.days > 1:
         formatted_time = f"{duration.days} Days {hours}h"
@@ -137,10 +139,10 @@ def convert_time(duration: datetime) -> tuple[str, str]:
         formatted_time = f"{duration.days} Day {hours}h"
     else:
         formatted_time = f"{hours}h {minutes}m"
-    
+
     """Hours format with minutes"""
     hours_format = f"{total_hours}h {total_minutes}min"
-    
+
     return formatted_time, hours_format
 
 
