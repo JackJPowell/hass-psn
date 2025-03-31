@@ -434,6 +434,8 @@ class PsnSensor(PSNEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, str]:
         """Return the state attributes of the entity."""
+        if self.entity_description.attributes_fn is None:
+            return {}
         if self.coordinator.data.get("title_metadata").get("npTitleId") is not None:
             return self.entity_description.attributes_fn(self.coordinator.data)
         if self.entity_description.key == "trophy_summary":
