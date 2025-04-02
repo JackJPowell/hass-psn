@@ -108,18 +108,20 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         attrs["earned_trophies"] = title_trophies.earned_trophies
         attrs["trophy_progress"] = title_trophies.progress
 
+        title_stats = None
         for t in coordinator_data["recent_titles"]:
             if t.title_id == coordinator_data.get("title_metadata").get("npTitleId"):
                 title_stats = t
                 break
 
-        attrs["play_count"] = title_stats.play_count
+        if title_stats:
+            attrs["play_count"] = title_stats.play_count
 
-        formatted_duration, hours_duration = convert_time(
-            duration=title_stats.play_duration
-        )
-        attrs["play_duration"] = formatted_duration
-        attrs["play_duration_hours"] = hours_duration
+            formatted_duration, hours_duration = convert_time(
+                duration=title_stats.play_duration
+            )
+            attrs["play_duration"] = formatted_duration
+            attrs["play_duration_hours"] = hours_duration
 
     return attrs
 
@@ -434,6 +436,8 @@ class PsnSensor(PSNEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, str]:
         """Return the state attributes of the entity."""
+        if self.entity_description.attributes_fn is None:
+            return {}
         if self.coordinator.data.get("title_metadata").get("npTitleId") is not None:
             return self.entity_description.attributes_fn(self.coordinator.data)
         if self.entity_description.key == "trophy_summary":
