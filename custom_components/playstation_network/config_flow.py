@@ -92,7 +92,13 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         if user_input is None or user_input == {}:
             return self.async_show_form(
-                step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+                step_id="user",
+                data_schema=STEP_USER_DATA_SCHEMA,
+                errors=errors,
+                description_placeholders={
+                    "npsso_link": "https://ca.account.sony.com/api/v1/ssocookie",
+                    "psn_link": "https://playstation.com",
+                },
             )
 
         try:
@@ -113,7 +119,13 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title=info["title"], data=info)
 
         return self.async_show_form(
-            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+            step_id="user",
+            data_schema=STEP_USER_DATA_SCHEMA,
+            errors=errors,
+            description_placeholders={
+                "npsso_link": "https://ca.account.sony.com/api/v1/ssocookie",
+                "psn_link": "https://playstation.com",
+            },
         )
 
     async def async_step_reauth(
@@ -142,6 +154,10 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
                 step_id="reauth_confirm",
                 data_schema=STEP_USER_DATA_SCHEMA,
                 errors=errors,
+                description_placeholders={
+                    "npsso_link": "https://ca.account.sony.com/api/v1/ssocookie",
+                    "psn_link": "https://playstation.com",
+                },
             )
 
         try:
@@ -175,6 +191,10 @@ class PlaystationNetworkConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reauth_confirm",
             data_schema=STEP_USER_DATA_SCHEMA,
             errors=errors,
+            description_placeholders={
+                "npsso_link": "https://ca.account.sony.com/api/v1/ssocookie",
+                "psn_link": "https://playstation.com",
+            },
         )
 
     async def _async_set_unique_id_and_abort_if_already_configured(
