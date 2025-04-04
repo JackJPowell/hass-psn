@@ -7,6 +7,7 @@ import logging
 from homeassistant.components.notify import ATTR_TARGET, BaseNotificationService
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from psnawp_api.core.psnawp_exceptions import PSNAWPNotFound
 
 from .const import DOMAIN, PSN_API
 
@@ -23,15 +24,16 @@ def get_service(
         return None
 
     data = hass.data[DOMAIN][discovery_info.get("entry_id")][PSN_API]
-    return PsnNotificationService(data)
+    return PsnNotificationService(data, hass)
 
 
 class PsnNotificationService(BaseNotificationService):
     """Implement the notification service for the PSN Network."""
 
-    def __init__(self, psn) -> None:
+    def __init__(self, psn, hass) -> None:
         """Initialize the service."""
         self.psn = psn
+        self.hass = hass
 
     async def async_send_message(self, message="", **kwargs):
         """Send a message."""
@@ -42,9 +44,19 @@ class PsnNotificationService(BaseNotificationService):
             raise ValueError("Missing required argument: target")
 
         for user in users:
-            individual = await self.psn.user(online_id=user)
-            user_list.append(individual)
+            try:
+                individual = await self.hass.async_add_executor_job(
+                    lambda: self.psn.user(online_id=user)
+                )
+                user_list.append(individual)
+            except PSNAWPNotFound as err:
+                _LOGGER.error("User not found: %s", user)
+                raise err
 
-        group = await self.psn.group(users_list=user_list)
-        response = await group.send_message(message)
+        group = await self.hass.async_add_executor_job(
+            lambda: self.psn.group(users_list=user_list)
+        )
+        response = await self.hass.async_add_executor_job(
+            lambda: group.send_message(message)
+        )
         _LOGGER.debug("Send Message Response: %s", response)
