@@ -40,7 +40,7 @@ def get_genres_as_string(coordinator_data: any) -> str:
     genres = coordinator_data.get("genres", [])
     if not genres:
         return "Unknown"
-    return ", ".join(genre for genre in genres if genre)
+    return ", ".join(genre for genre in genres if genre).casefold().title()
 
 
 def get_status(coordinator_data: any) -> str:
@@ -95,7 +95,8 @@ def get_status_attr(coordinator_data: any) -> dict[str, str]:
         title_trophies = coordinator_data.get("title_trophies", {})
 
         attrs["name"] = title.get("name", "").title()
-        attrs["genres"] = title.get("genres", []) + title.get("subGenres", [])
+        genres = title.get("genres", []) + title.get("subGenres", [])
+        attrs["genres"] = [item for item in genres if item != "N/A"]
 
         description = ""
         for desc in title.get("descriptions", [""]):

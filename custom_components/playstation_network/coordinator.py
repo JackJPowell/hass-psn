@@ -95,6 +95,7 @@ class PsnCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 title = await self.hass.async_add_executor_job(
                     lambda: self.api.game_title(
                         title_id=title_id,
+                        platform=self.data["title_metadata"]["format"],
                         account_id="me",
                     )
                 )
