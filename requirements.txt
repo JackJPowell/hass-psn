@@ -2,6 +2,7 @@
 homeassistant==2025.5.1
 PyTurboJPEG
 PSNAWP==3.0.0
+pyrate_limiter==3.7.0
 
 # Development
 colorlog==6.7.0

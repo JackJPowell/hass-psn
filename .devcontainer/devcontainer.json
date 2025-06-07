@@ -2,10 +2,10 @@
 {
   "name": "Home Assistant integration development",
   "image": "mcr.microsoft.com/vscode/devcontainers/python:3.13-bullseye",
-  "postCreateCommand": ".devcontainer/setup",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install libturbojpeg0",
   "postAttachCommand": ".devcontainer/setup",
   "forwardPorts": [8123],
-  "runArgs": ["-e", "GIT_EDITOR=code --wait"],
+  "runArgs": ["-e", "GIT_EDITOR=code --wait", "--network=host"],
   "containerEnv": {
     "PYTHONASYNCIODEBUG": "1"
   },
