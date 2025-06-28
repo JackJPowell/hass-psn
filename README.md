@@ -50,7 +50,7 @@ There is a config flow for this integration. After installing the custom compone
 4. _You will now begin the configuration flow process_
 5. **NPSSO** can be found via the following steps:
    1. Login to your [Playstation](https://playstation.com) account
-     1. Be sure to include your contry code like `/en-us/` or `/en-gb/` on the end of the url
+     1. Be sure to include your country code like `/en-us/` or `/en-gb/` on the end of the url
    2. Follow [this link](https://ca.account.sony.com/api/v1/ssocookie) to be presented with your NPSSO code
    3. Only copy the alphanumeric string after "npsso": Do not copy the quotes
    4. If you are receiving a 429 error, logout of your playstation account and go back to step 1
@@ -104,3 +104,38 @@ data: {
 ## About This Project
 
 I am not associated with Sony or any of its subsidiaries, and provide this custom component purely for your own enjoyment and home automation needs.
+
+## Testing
+
+To ensure code quality and prevent regressions, this repository uses automated tests and pre-commit hooks.
+
+### Running Tests
+
+You can run all tests using:
+
+```bash
+pytest
+```
+
+Or run a specific test file:
+
+```bash
+pytest tests/test_config_flow.py
+```
+
+### Pre-commit Hooks
+
+This repository uses [pre-commit](https://pre-commit.com/) to run code quality checks and tests before each commit. To set up pre-commit hooks, run:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+After setup, every commit will automatically run code formatters, linters, and tests. You can manually run all hooks with:
+
+```bash
+pre-commit run --all-files
+```
+
+If any hook fails, your commit will be blocked until the issues are resolved.

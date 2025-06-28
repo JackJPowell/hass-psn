@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+env:
+  PYTHON_VERSIONS: '["3.13.2"]'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(env.PYTHON_VERSIONS) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: astral-sh/setup-uv@v1
+
+      - name: Install dependencies
+        run: uv sync -p ${{ matrix.python-version }}
+
+      - name: Run spellcheck
+        run: cspell --config cspell.json
+
+      - name: format
+        run: uv run ruff format --check autobot tests
+
+      - name: Run check
+        run: uv run ruff check autobot tests
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(env.PYTHON_VERSIONS) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: astral-sh/setup-uv@v1
+
+      - name: Install dependencies
+        run: uv sync -p ${{ matrix.python-version }}
+
+      - name: unittest
+        run: uv run python -m unittest discover -s tests/unit
+
+      - name: Run pytest
+        run: uv run pytest
