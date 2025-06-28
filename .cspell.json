@@ -1,0 +1,32 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "PSNAWP",
+    "PyTurboJPEG",
+    "pyrate_limiter",
+    "autobot",
+    "hass",
+    "HomeAssistant",
+    "npsso",
+    "Playstation",
+    "precommit",
+    "uv",
+    "yaml",
+    "yml"
+  ],
+  "ignorePaths": [
+    "dist",
+    "build",
+    ".venv",
+    "*.snap",
+    "*.csv",
+    "*.json",
+    "*.ambr",
+    "tests/fixtures/",
+    "homeassistant/generated/",
+    "**/snapshots/"
+  ],
+  "dictionaries": ["python", "softwareTerms", "en_US"],
+  "enableFiletypes": ["py", "md", "yaml", "yml", "json", "toml"]
+}

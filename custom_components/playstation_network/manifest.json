@@ -1,14 +1,15 @@
 {
-  "domain": "playstation_network",
-  "name": "Playstation Network",
   "codeowners": ["@jackjpowell"],
   "config_flow": true,
   "dependencies": ["network"],
   "documentation": "https://github.com/JackJPowell/hass-psn",
+  "domain": "playstation_network",
   "homekit": {},
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/JackJPowell/hass-psn/issues",
+  "name": "Playstation Network",
+  "quality_scale": "bronze",
   "requirements": ["PSNAWP==3.0.0", "pyrate-limiter>=3.7.0"],
   "ssdp": [],
   "version": "0.8.0"

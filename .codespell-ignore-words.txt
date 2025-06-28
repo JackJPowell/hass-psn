@@ -1,0 +1,11 @@
+# List of words to ignore for codespell
+aiport
+astroid
+checkin
+currenty
+hass
+iif
+incomfort
+lookin
+nam
+NotIn

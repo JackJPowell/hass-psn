@@ -1,0 +1,184 @@
+[build-system]
+requires = ["setuptools==78.1.1"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "playstation_network"
+version = "0.8.0"
+description = "Playstation Network integration for Home Assistant."
+readme = "README.md"
+authors = [
+  { name = "Jack Powell", email = "jackpowell@users.noreply.github.com" },
+]
+license = { text = "Apache-2.0" }
+keywords = ["home-assistant", "playstation", "psn", "integration"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Home Automation",
+]
+requires-python = ">=3.13.2"
+dependencies = [
+  "PSNAWP==3.0.0",
+  "pyrate-limiter>=3.7.0",
+  "PyTurboJPEG",
+  "aiohttp_fast_zlib",
+]
+
+[project.optional-dependencies]
+dev = [
+  "colorlog==6.7.0",
+  "pip>=24.2",
+  "ruff>=0.5.3",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/JackJPowell/hass-psn"
+"Documentation" = "https://github.com/JackJPowell/hass-psn/README.md"
+"Bug Tracker" = "https://github.com/JackJPowell/hass-psn/issues"
+
+[project.scripts]
+hass = "homeassistant.__main__:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["homeassistant*"]
+
+[tool.pylint.MAIN]
+py-version = "3.13"
+# Use a conservative default here; 2 should speed up most setups and not hurt
+# any too bad. Override on command line as appropriate.
+jobs = 2
+init-hook = """\
+    from pathlib import Path; \
+    import sys; \
+
+    from pylint.config import find_default_config_files; \
+
+    sys.path.append( \
+        str(Path(next(find_default_config_files())).parent.joinpath('pylint/plugins'))
+    ) \
+    """
+load-plugins = [
+  "pylint.extensions.code_style",
+  "pylint.extensions.typing",
+  "hass_decorator",
+  "hass_enforce_class_module",
+  "hass_enforce_sorted_platforms",
+  "hass_enforce_super_call",
+  "hass_enforce_type_hints",
+  "hass_inheritance",
+  "hass_imports",
+  "hass_logger",
+  "pylint_per_file_ignores",
+]
+persistent = false
+extension-pkg-allow-list = [
+  "av.audio.stream",
+  "av.logging",
+  "av.stream",
+  "ciso8601",
+  "orjson",
+  "cv2",
+]
+fail-on = ["I"]
+
+[tool.pylint.BASIC]
+class-const-naming-style = "any"
+
+
+[tool.pylint.REPORTS]
+score = false
+
+[tool.pylint.TYPECHECK]
+
+mixin-class-rgx = ".*[Mm]ix[Ii]n"
+
+[tool.pylint.FORMAT]
+expected-line-ending-format = "LF"
+
+[tool.pylint.TYPING]
+runtime-typing = false
+
+[tool.pylint.CODE_STYLE]
+max-line-length-suggestions = 72
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [".git", "testing_config"]
+log_format = "%(asctime)s.%(msecs)03d %(levelname)-8s %(threadName)s %(name)s:%(filename)s:%(lineno)s %(message)s"
+log_date_format = "%Y-%m-%d %H:%M:%S"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+
+[tool.coverage.run]
+source = ["homeassistant"]
+
+[tool.coverage.report]
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError",
+  # TYPE_CHECKING and @overload blocks are never executed during pytest run
+  "if TYPE_CHECKING:",
+  "@overload",
+]
+
+[tool.ruff]
+required-version = ">=0.11.0"
+
+[tool.uv]
+required-version = "0.7.1"
+
+
+
+
+
+
+
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"async_timeout".msg = "use asyncio.timeout instead"
+"pytz".msg = "use zoneinfo instead"
+"tests".msg = "You should not import tests"
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["homeassistant"]
+combine-as-imports = true
+split-on-trailing-comma = false
+
+
+# Temporary
+"homeassistant/**" = ["PTH"]
+"tests/**" = ["PTH"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 25
+
+[tool.ruff.lint.pydocstyle]
+property-decorators = ["propcache.api.cached_property"]
+[dependency-groups]
+dev = [
+  "pytest>=8.4.1",
+  "codespell==2.4.1",
+  "ruff==0.12.1",
+  "yamllint==1.37.1",
+]
+ci = [
+  "pytest>=8.4.1",
+  "ruff==0.12.1",
+  "yamllint==1.37.1",
+  "codespell==2.4.1",
+]
