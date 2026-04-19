@@ -1,13 +1,15 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
   "name": "Home Assistant integration development",
-  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.13-bullseye",
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install libturbojpeg0",
+  "postCreateCommand": ".devcontainer/setup",
   "postAttachCommand": ".devcontainer/setup",
-  "forwardPorts": [8123],
+  "forwardPorts": [8124],
   "runArgs": ["-e", "GIT_EDITOR=code --wait", "--network=host"],
   "containerEnv": {
     "PYTHONASYNCIODEBUG": "1"
+  },
+  "build": {
+    "dockerfile": "Dockerfile"
   },
   "customizations": {
     "vscode": {
@@ -18,8 +20,7 @@
         "visualstudioexptteam.vscodeintellicode",
         "redhat.vscode-yaml",
         "esbenp.prettier-vscode",
-        "GitHub.vscode-pull-request-github",
-        "GitHub.copilot"
+        "GitHub.vscode-pull-request-github"
       ],
       "settings": {
         "python.experiments.optOutFrom": ["pythonTestAdapter"],

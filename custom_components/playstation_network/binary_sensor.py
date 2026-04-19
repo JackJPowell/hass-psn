@@ -27,7 +27,7 @@ class PlaystationPlusBinarySensor(PSNEntity, BinarySensorEntity):
 
         # As per the sensor, this must be a unique value within this domain.
         self._attr_unique_id = (
-            f"{coordinator.data.get("username").lower()}_has_playstation_plus"
+            f"{coordinator.data.get('username').lower()}_has_playstation_plus"
         )
 
         # The name of the entity

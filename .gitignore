@@ -2,3 +2,5 @@
 *.zip
 config/*
 *.pyc
+.DS_Store
+._.DS_Store

@@ -25,7 +25,7 @@ class PlaystationProfileImage(PSNEntity, ImageEntity):
         self.coordinator = coordinator
 
         self._attr_unique_id = (
-            f"{self.coordinator.data.get("username").lower()}_playstation_avatar"
+            f"{self.coordinator.data.get('username').lower()}_playstation_avatar"
         )
 
         ImageEntity.__init__(self, coordinator.hass)
